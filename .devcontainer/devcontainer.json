@@ -1,24 +1,80 @@
 {
-	"name": "🎙️ Backstage Dev Container",
+	"name": "🎙️ Backstage + 🤖 Copilot SDK Demo",
 	"dockerComposeFile": "compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	// 🧩 Dev Container Features
 	"features": {
 		"ghcr.io/devcontainers/features/copilot-cli:1": {},
-		"ghcr.io/devcontainers/features/github-cli:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
+
+	// 🚀 Puertos del proyecto
 	"forwardPorts": [
 		3000,
 		7007
 	],
 	"portsAttributes": {
 		"3000": {
-			"label": "Backstage frontend",
+			"label": "🎨 Backstage Frontend",
 			"onAutoForward": "notify"
 		},
 		"7007": {
-			"label": "Backstage backend",
+			"label": "⚙️ Backstage Backend",
 			"onAutoForward": "notify"
 		}
 	},
+
+	// 📦 Instalar dependencias al crear el contenedor
+	"postCreateCommand": "yarn install --immutable",
+
+	// 🛠️ Extensiones y configuración de VS Code
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				// 🤖 GitHub Copilot
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+
+				// 📝 Lenguaje y formateo
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+
+				// 🔷 TypeScript & React
+				"dsznajder.es7-react-js-snippets",
+				"christian-kohler.path-intellisense",
+
+				// 🐳 Docker
+				"ms-azuretools.vscode-docker",
+
+				// 🧪 Testing
+				"ms-playwright.playwright",
+
+				// 🔀 Git
+				"eamodio.gitlens",
+				"GitHub.vscode-pull-request-github",
+
+				// 🎨 DX
+				"PKief.material-icon-theme",
+				"aaron-bond.better-comments"
+			],
+			"settings": {
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+					"source.fixAll.eslint": "explicit"
+				},
+				"eslint.validate": [
+					"javascript",
+					"javascriptreact",
+					"typescript",
+					"typescriptreact"
+				],
+				"typescript.tsdk": "node_modules/typescript/lib",
+				"files.eol": "\n"
+			}
+		}
+	}
 }
