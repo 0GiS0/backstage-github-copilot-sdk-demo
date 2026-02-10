@@ -37,6 +37,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { NotificationsPage } from '@backstage/plugin-notifications';
 import { SignalsDisplay } from '@backstage/plugin-signals';
+import { CopilotChatWidget } from '@internal/backstage-plugin-copilot-chat';
 
 const app = createApp({
   apis,
@@ -107,6 +108,7 @@ export default app.createRoot(
     <SignalsDisplay />
     <AppRouter>
       <Root>{routes}</Root>
+      <CopilotChatWidget />
     </AppRouter>
   </>,
 );

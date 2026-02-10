@@ -1,0 +1,259 @@
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { makeStyles, Fab, Fade, Typography, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import RemoveIcon from '@material-ui/icons/Remove';
+import { ChatMessage } from '../CopilotChatPage/types';
+import { MessageBubble } from '../CopilotChatPage/MessageBubble';
+import { ChatInput } from '../CopilotChatPage/ChatInput';
+import { TypingIndicator } from '../CopilotChatPage/TypingIndicator';
+import { CopilotIcon } from './CopilotIcon';
+import { WidgetEmptyState } from './WidgetEmptyState';
+
+const WIDGET_WIDTH = 400;
+const WIDGET_HEIGHT = 560;
+
+const useStyles = makeStyles(theme => ({
+  fab: {
+    position: 'fixed',
+    bottom: theme.spacing(3),
+    right: theme.spacing(3),
+    zIndex: theme.zIndex.snackbar + 1,
+    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+    color: '#fff',
+    width: 56,
+    height: 56,
+    boxShadow: '0 4px 20px rgba(124, 58, 237, 0.4)',
+    '&:hover': {
+      background: 'linear-gradient(135deg, #6d28d9 0%, #9333ea 100%)',
+      boxShadow: '0 6px 28px rgba(124, 58, 237, 0.55)',
+    },
+    transition: 'all 0.2s ease',
+  },
+  fabIcon: {
+    width: 28,
+    height: 28,
+  },
+  badge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 14,
+    height: 14,
+    borderRadius: '50%',
+    background: '#22c55e',
+    border: `2px solid ${theme.palette.background.default}`,
+  },
+  panel: {
+    position: 'fixed',
+    bottom: theme.spacing(3) + 56 + 12,
+    right: theme.spacing(3),
+    width: WIDGET_WIDTH,
+    height: WIDGET_HEIGHT,
+    zIndex: theme.zIndex.snackbar + 1,
+    borderRadius: 16,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    background: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`,
+    boxShadow: '0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1.5),
+    padding: theme.spacing(1.5, 2),
+    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+    color: '#fff',
+    flexShrink: 0,
+  },
+  headerIcon: {
+    width: 28,
+    height: 28,
+  },
+  headerText: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontWeight: 700,
+    fontSize: '0.95rem',
+    lineHeight: 1.2,
+  },
+  headerSubtitle: {
+    fontSize: '0.7rem',
+    opacity: 0.85,
+    lineHeight: 1.2,
+  },
+  headerButton: {
+    color: 'rgba(255,255,255,0.8)',
+    padding: 6,
+    '&:hover': {
+      color: '#fff',
+      background: 'rgba(255,255,255,0.15)',
+    },
+  },
+  messagesArea: {
+    flex: 1,
+    overflowY: 'auto',
+    padding: theme.spacing(2),
+    scrollBehavior: 'smooth',
+    '&::-webkit-scrollbar': {
+      width: 5,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: theme.palette.divider,
+      borderRadius: 3,
+    },
+  },
+  emptyContainer: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));
+
+let messageCounter = 0;
+function createId() {
+  messageCounter += 1;
+  return `msg-${Date.now()}-${messageCounter}`;
+}
+
+export const CopilotChatWidget = () => {
+  const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading, scrollToBottom]);
+
+  const simulateResponse = useCallback((userMessage: string) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: createId(),
+          role: 'assistant',
+          content: `Thanks for your question! I received: "${userMessage}"\n\nThis is a placeholder response. Once the backend plugin is connected to the GitHub Copilot SDK, I'll provide real answers.`,
+          timestamp: new Date(),
+        },
+      ]);
+      setIsLoading(false);
+    }, 1500);
+  }, []);
+
+  const handleSend = useCallback(
+    (text: string) => {
+      const userMsg: ChatMessage = {
+        id: createId(),
+        role: 'user',
+        content: text,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, userMsg]);
+      simulateResponse(text);
+    },
+    [simulateResponse],
+  );
+
+  const handleClear = useCallback(() => {
+    setMessages([]);
+    setIsLoading(false);
+  }, []);
+
+  const hasMessages = messages.length > 0;
+
+  return (
+    <>
+      {/* Floating Action Button */}
+      {!open && (
+        <Fade in>
+          <Fab
+            className={classes.fab}
+            onClick={() => setOpen(true)}
+            aria-label="Open Copilot Chat"
+          >
+            <CopilotIcon className={classes.fabIcon} />
+            <div className={classes.badge} />
+          </Fab>
+        </Fade>
+      )}
+
+      {/* Chat Panel */}
+      <Fade in={open} unmountOnExit>
+        <div className={classes.panel}>
+          {/* Header */}
+          <div className={classes.header}>
+            <CopilotIcon className={classes.headerIcon} />
+            <div className={classes.headerText}>
+              <Typography className={classes.headerTitle}>
+                Copilot Chat
+              </Typography>
+              <Typography className={classes.headerSubtitle}>
+                Powered by GitHub Copilot SDK
+              </Typography>
+            </div>
+            {hasMessages && (
+              <IconButton
+                className={classes.headerButton}
+                size="small"
+                onClick={handleClear}
+                aria-label="Clear chat"
+                title="Clear chat"
+              >
+                <RemoveIcon fontSize="small" />
+              </IconButton>
+            )}
+            <IconButton
+              className={classes.headerButton}
+              size="small"
+              onClick={() => setOpen(false)}
+              aria-label="Close chat"
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </div>
+
+          {/* Messages */}
+          {hasMessages ? (
+            <div className={classes.messagesArea}>
+              {messages.map(msg => (
+                <MessageBubble key={msg.id} message={msg} />
+              ))}
+              {isLoading && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
+          ) : (
+            <div className={classes.emptyContainer}>
+              <WidgetEmptyState onSuggestionClick={handleSend} />
+            </div>
+          )}
+
+          {/* Input */}
+          <ChatInput onSend={handleSend} disabled={isLoading} />
+        </div>
+      </Fade>
+
+      {/* FAB when panel is open (to close) */}
+      {open && (
+        <Fade in>
+          <Fab
+            className={classes.fab}
+            onClick={() => setOpen(false)}
+            aria-label="Close Copilot Chat"
+          >
+            <CloseIcon />
+          </Fab>
+        </Fade>
+      )}
+    </>
+  );
+};
