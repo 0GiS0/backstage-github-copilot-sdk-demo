@@ -78,15 +78,19 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
   });
 
   return (
-    <div className={`${classes.row} ${isUser ? classes.rowUser : classes.rowAssistant}`}>
+    <div
+      className={`${classes.row} ${
+        isUser ? classes.rowUser : classes.rowAssistant
+      }`}
+    >
       {!isUser && (
-        <div className={`${classes.avatar} ${classes.avatarAssistant}`}>
-          CP
-        </div>
+        <div className={`${classes.avatar} ${classes.avatarAssistant}`}>CP</div>
       )}
       <div>
         <div
-          className={`${classes.bubble} ${isUser ? classes.bubbleUser : classes.bubbleAssistant}`}
+          className={`${classes.bubble} ${
+            isUser ? classes.bubbleUser : classes.bubbleAssistant
+          }`}
         >
           {message.content}
         </div>
@@ -97,9 +101,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
         </Typography>
       </div>
       {isUser && (
-        <div className={`${classes.avatar} ${classes.avatarUser}`}>
-          U
-        </div>
+        <div className={`${classes.avatar} ${classes.avatarUser}`}>U</div>
       )}
     </div>
   );

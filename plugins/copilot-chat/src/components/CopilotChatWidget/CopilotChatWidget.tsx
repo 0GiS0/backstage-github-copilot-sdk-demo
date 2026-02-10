@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { makeStyles, Fab, Fade, Typography, IconButton } from '@material-ui/core';
+import {
+  makeStyles,
+  Fab,
+  Fade,
+  Typography,
+  IconButton,
+} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { ChatMessage } from '../CopilotChatPage/types';
@@ -18,20 +24,20 @@ const useStyles = makeStyles(theme => ({
     bottom: theme.spacing(3),
     right: theme.spacing(3),
     zIndex: theme.zIndex.snackbar + 1,
-    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+    background: '#000',
     color: '#fff',
-    width: 56,
-    height: 56,
-    boxShadow: '0 4px 20px rgba(124, 58, 237, 0.4)',
+    width: 72,
+    height: 72,
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.35)',
     '&:hover': {
-      background: 'linear-gradient(135deg, #6d28d9 0%, #9333ea 100%)',
-      boxShadow: '0 6px 28px rgba(124, 58, 237, 0.55)',
+      background: '#1a1a1a',
+      boxShadow: '0 6px 28px rgba(0, 0, 0, 0.5)',
     },
     transition: 'all 0.2s ease',
   },
   fabIcon: {
-    width: 28,
-    height: 28,
+    width: 46,
+    height: 46,
   },
   badge: {
     position: 'absolute',
@@ -63,7 +69,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     gap: theme.spacing(1.5),
     padding: theme.spacing(1.5, 2),
-    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+    background: '#000',
     color: '#fff',
     flexShrink: 0,
   },
@@ -111,6 +117,36 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  tooltip: {
+    position: 'fixed',
+    bottom: theme.spacing(3) + 72 + 8,
+    right: theme.spacing(3),
+    background: '#000',
+    color: '#fff',
+    padding: theme.spacing(1, 1.5),
+    borderRadius: 10,
+    fontSize: '0.82rem',
+    fontWeight: 600,
+    boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+    zIndex: theme.zIndex.snackbar + 1,
+    whiteSpace: 'nowrap',
+    animation: '$bounce 2s ease-in-out infinite',
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      bottom: -6,
+      right: 28,
+      width: 12,
+      height: 12,
+      background: '#000',
+      transform: 'rotate(45deg)',
+      borderRadius: 2,
+    },
+  },
+  '@keyframes bounce': {
+    '0%, 100%': { transform: 'translateY(0)' },
+    '50%': { transform: 'translateY(-4px)' },
+  },
 }));
 
 let messageCounter = 0;
@@ -122,6 +158,7 @@ function createId() {
 export const CopilotChatWidget = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -178,12 +215,22 @@ export const CopilotChatWidget = () => {
         <Fade in>
           <Fab
             className={classes.fab}
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              setOpen(true);
+              setHasBeenOpened(true);
+            }}
             aria-label="Open Copilot Chat"
           >
             <CopilotIcon className={classes.fabIcon} />
             <div className={classes.badge} />
           </Fab>
+        </Fade>
+      )}
+
+      {/* Pssst tooltip */}
+      {!open && !hasBeenOpened && (
+        <Fade in>
+          <div className={classes.tooltip}>Pssst pssst... need help? 👀</div>
         </Fade>
       )}
 

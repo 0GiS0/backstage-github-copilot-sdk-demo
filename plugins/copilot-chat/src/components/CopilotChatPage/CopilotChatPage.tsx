@@ -1,10 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core';
-import {
-  Header,
-  Page,
-  Content,
-} from '@backstage/core-components';
+import { Header, Page, Content } from '@backstage/core-components';
 import { ChatMessage } from './types';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
@@ -95,10 +91,7 @@ export const CopilotChatPage = () => {
 
   return (
     <Page themeId="tool">
-      <Header
-        title="Copilot Chat"
-        subtitle="Powered by GitHub Copilot SDK"
-      />
+      <Header title="Copilot Chat" subtitle="Powered by GitHub Copilot SDK" />
       <Content className={classes.content}>
         {hasMessages ? (
           <div className={classes.messagesArea}>

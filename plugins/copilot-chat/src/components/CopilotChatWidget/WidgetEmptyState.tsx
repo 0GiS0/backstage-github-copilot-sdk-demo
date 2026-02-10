@@ -1,4 +1,5 @@
 import { makeStyles, Typography } from '@material-ui/core';
+import copilotLogo from '../../assets/copilot-logo.png';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -11,17 +12,12 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.secondary,
   },
   logo: {
-    width: 48,
-    height: 48,
+    width: 56,
+    height: 56,
+    padding: 10,
     borderRadius: '50%',
-    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    background: '#000',
     marginBottom: theme.spacing(1.5),
-    fontSize: '1.4rem',
-    color: '#fff',
-    fontWeight: 700,
   },
   title: {
     fontWeight: 600,
@@ -54,9 +50,10 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       borderColor: '#7c3aed',
       color: '#7c3aed',
-      background: theme.palette.type === 'dark'
-        ? 'rgba(124,58,237,0.08)'
-        : 'rgba(124,58,237,0.04)',
+      background:
+        theme.palette.type === 'dark'
+          ? 'rgba(124,58,237,0.08)'
+          : 'rgba(124,58,237,0.04)',
     },
   },
 }));
@@ -71,15 +68,15 @@ const suggestions = [
   '🛠️ Explain the CI/CD pipeline',
 ];
 
-export const WidgetEmptyState = ({ onSuggestionClick }: WidgetEmptyStateProps) => {
+export const WidgetEmptyState = ({
+  onSuggestionClick,
+}: WidgetEmptyStateProps) => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      <div className={classes.logo}>✦</div>
-      <Typography className={classes.title}>
-        How can I help you?
-      </Typography>
+      <img src={copilotLogo} alt="Copilot" className={classes.logo} />
+      <Typography className={classes.title}>How can I help you?</Typography>
       <Typography variant="body2" className={classes.subtitle}>
         Ask anything about your software catalog, services, or workflows.
       </Typography>

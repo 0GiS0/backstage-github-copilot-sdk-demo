@@ -1,10 +1,5 @@
 import { useState, KeyboardEvent } from 'react';
-import {
-  makeStyles,
-  IconButton,
-  InputBase,
-  Paper,
-} from '@material-ui/core';
+import { makeStyles, IconButton, InputBase, Paper } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
 
 const useStyles = makeStyles(theme => ({

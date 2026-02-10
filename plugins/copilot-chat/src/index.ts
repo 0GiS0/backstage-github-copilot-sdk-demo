@@ -1,1 +1,5 @@
-export { copilotChatPlugin, CopilotChatPage, CopilotChatWidget } from './plugin';
+export {
+  copilotChatPlugin,
+  CopilotChatPage,
+  CopilotChatWidget,
+} from './plugin';
