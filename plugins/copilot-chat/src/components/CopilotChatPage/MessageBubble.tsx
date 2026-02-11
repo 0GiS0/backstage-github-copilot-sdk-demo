@@ -12,12 +12,15 @@ const useStyles = makeStyles(theme => ({
   rowAssistant: {
     justifyContent: 'flex-start',
   },
-  bubble: {
+  messageWrapper: {
     maxWidth: '75%',
+    minWidth: 40,
+  },
+  bubble: {
     padding: theme.spacing(1.5, 2),
     borderRadius: 12,
-    wordBreak: 'break-word',
-    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word' as const,
+    whiteSpace: 'pre-wrap' as const,
     lineHeight: 1.5,
     fontSize: '0.875rem',
   },
@@ -86,7 +89,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
       {!isUser && (
         <div className={`${classes.avatar} ${classes.avatarAssistant}`}>CP</div>
       )}
-      <div>
+      <div className={classes.messageWrapper}>
         <div
           className={`${classes.bubble} ${
             isUser ? classes.bubbleUser : classes.bubbleAssistant
