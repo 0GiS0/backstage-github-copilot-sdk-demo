@@ -8,6 +8,8 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import RemoveIcon from '@material-ui/icons/Remove';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import { MessageBubble } from '../CopilotChatPage/MessageBubble';
 import { ChatInput } from '../CopilotChatPage/ChatInput';
 import { TypingIndicator } from '../CopilotChatPage/TypingIndicator';
@@ -15,8 +17,10 @@ import { useCopilotChat } from '../CopilotChatPage/useCopilotChat';
 import { CopilotIcon } from './CopilotIcon';
 import { WidgetEmptyState } from './WidgetEmptyState';
 
-const WIDGET_WIDTH = 400;
-const WIDGET_HEIGHT = 560;
+const WIDGET_MIN_WIDTH = 340;
+const WIDGET_MIN_HEIGHT = 400;
+const WIDGET_DEFAULT_WIDTH = 400;
+const WIDGET_DEFAULT_HEIGHT = 560;
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -53,8 +57,6 @@ const useStyles = makeStyles(theme => ({
     position: 'fixed',
     bottom: theme.spacing(3) + 56 + 12,
     right: theme.spacing(3),
-    width: WIDGET_WIDTH,
-    height: WIDGET_HEIGHT,
     zIndex: theme.zIndex.snackbar + 1,
     borderRadius: 16,
     display: 'flex',
@@ -63,6 +65,44 @@ const useStyles = makeStyles(theme => ({
     background: theme.palette.background.paper,
     border: `1px solid ${theme.palette.divider}`,
     boxShadow: '0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)',
+    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+  },
+  panelFullscreen: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100vw !important',
+    height: '100vh !important',
+    borderRadius: 0,
+    zIndex: theme.zIndex.modal + 1,
+    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+  },
+  resizeHandle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 16,
+    height: 16,
+    cursor: 'nw-resize',
+    zIndex: 10,
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 4,
+      left: 4,
+      width: 8,
+      height: 8,
+      borderTop: `2px solid ${theme.palette.divider}`,
+      borderLeft: `2px solid ${theme.palette.divider}`,
+      borderRadius: '2px 0 0 0',
+      opacity: 0,
+      transition: 'opacity 0.2s',
+    },
+    '&:hover::before': {
+      opacity: 1,
+    },
   },
   header: {
     display: 'flex',
@@ -153,8 +193,15 @@ export const CopilotChatWidget = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [size, setSize] = useState({
+    width: WIDGET_DEFAULT_WIDTH,
+    height: WIDGET_DEFAULT_HEIGHT,
+  });
   const { messages, isLoading, handleSend, handleClear } = useCopilotChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const isResizing = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -163,6 +210,48 @@ export const CopilotChatWidget = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading, scrollToBottom]);
+
+  // Resize from top-left corner
+  const handleResizeStart = useCallback(
+    (e: React.MouseEvent) => {
+      if (isFullscreen) return;
+      e.preventDefault();
+      isResizing.current = true;
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = size.width;
+      const startHeight = size.height;
+
+      const onMouseMove = (ev: MouseEvent) => {
+        if (!isResizing.current) return;
+        // Dragging top-left: moving left increases width, moving up increases height
+        const deltaX = startX - ev.clientX;
+        const deltaY = startY - ev.clientY;
+        setSize({
+          width: Math.max(WIDGET_MIN_WIDTH, startWidth + deltaX),
+          height: Math.max(WIDGET_MIN_HEIGHT, startHeight + deltaY),
+        });
+      };
+
+      const onMouseUp = () => {
+        isResizing.current = false;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      };
+
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'nw-resize';
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    },
+    [isFullscreen, size],
+  );
+
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev);
+  }, []);
 
   const hasMessages = messages.length > 0;
 
@@ -194,7 +283,25 @@ export const CopilotChatWidget = () => {
 
       {/* Chat Panel */}
       <Fade in={open} unmountOnExit>
-        <div className={classes.panel}>
+        <div
+          ref={panelRef}
+          className={`${classes.panel} ${
+            isFullscreen ? classes.panelFullscreen : ''
+          }`}
+          style={
+            isFullscreen
+              ? undefined
+              : { width: size.width, height: size.height }
+          }
+        >
+          {/* Resize handle (top-left, hidden in fullscreen) */}
+          {!isFullscreen && (
+            <div
+              className={classes.resizeHandle}
+              onMouseDown={handleResizeStart}
+            />
+          )}
+
           {/* Header */}
           <div className={classes.header}>
             <CopilotIcon className={classes.headerIcon} />
@@ -220,7 +327,23 @@ export const CopilotChatWidget = () => {
             <IconButton
               className={classes.headerButton}
               size="small"
-              onClick={() => setOpen(false)}
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+              title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            >
+              {isFullscreen ? (
+                <FullscreenExitIcon fontSize="small" />
+              ) : (
+                <FullscreenIcon fontSize="small" />
+              )}
+            </IconButton>
+            <IconButton
+              className={classes.headerButton}
+              size="small"
+              onClick={() => {
+                setOpen(false);
+                setIsFullscreen(false);
+              }}
               aria-label="Close chat"
             >
               <CloseIcon fontSize="small" />
@@ -248,11 +371,14 @@ export const CopilotChatWidget = () => {
       </Fade>
 
       {/* FAB when panel is open (to close) */}
-      {open && (
+      {open && !isFullscreen && (
         <Fade in>
           <Fab
             className={classes.fab}
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              setIsFullscreen(false);
+            }}
             aria-label="Close Copilot Chat"
           >
             <CloseIcon />
