@@ -1,129 +1,44 @@
-import {
-  mockCredentials,
-  startTestBackend,
-} from '@backstage/backend-test-utils';
-import { createServiceFactory } from '@backstage/backend-plugin-api';
-import { todoListServiceRef } from './services/TodoListService';
+import { startTestBackend } from '@backstage/backend-test-utils';
 import { copilotChatPlugin } from './plugin';
 import request from 'supertest';
-import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import {
-  ConflictError,
-  AuthenticationError,
-  NotAllowedError,
-} from '@backstage/errors';
 
-// TEMPLATE NOTE:
-// Plugin tests are integration tests for your plugin, ensuring that all pieces
-// work together end-to-end. You can still mock injected backend services
-// however, just like anyone who installs your plugin might replace the
-// services with their own implementations.
+// Plugin integration tests
 describe('plugin', () => {
-  it('should create and read TODO items', async () => {
+  it('should reject chat requests without GitHub token', async () => {
     const { server } = await startTestBackend({
       features: [copilotChatPlugin],
     });
 
-    await request(server).get('/api/copilot-chat/todos').expect(200, {
-      items: [],
-    });
+    const response = await request(server)
+      .post('/api/copilot-chat/chat')
+      .send({ message: 'Hello' });
 
-    const createRes = await request(server)
-      .post('/api/copilot-chat/todos')
-      .send({ title: 'My Todo' });
-
-    expect(createRes.status).toBe(201);
-    expect(createRes.body).toEqual({
-      id: expect.any(String),
-      title: 'My Todo',
-      createdBy: mockCredentials.user().principal.userEntityRef,
-      createdAt: expect.any(String),
-    });
-
-    const createdTodoItem = createRes.body;
-
-    await request(server)
-      .get('/api/copilot-chat/todos')
-      .expect(200, {
-        items: [createdTodoItem],
-      });
-
-    await request(server)
-      .get(`/api/copilot-chat/todos/${createdTodoItem.id}`)
-      .expect(200, createdTodoItem);
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: 'Missing X-GitHub-Token header' });
   });
 
-  it('should create TODO item with catalog information', async () => {
+  it('should reject chat requests without message', async () => {
     const { server } = await startTestBackend({
-      features: [
-        copilotChatPlugin,
-        catalogServiceMock.factory({
-          entities: [
-            {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'Component',
-              metadata: {
-                name: 'my-component',
-                namespace: 'default',
-                title: 'My Component',
-              },
-              spec: {
-                type: 'service',
-                owner: 'me',
-              },
-            },
-          ],
-        }),
-      ],
+      features: [copilotChatPlugin],
     });
 
-    const createRes = await request(server)
-      .post('/api/copilot-chat/todos')
-      .send({ title: 'My Todo', entityRef: 'component:default/my-component' });
+    const response = await request(server)
+      .post('/api/copilot-chat/chat')
+      .set('X-GitHub-Token', 'fake-token')
+      .send({});
 
-    expect(createRes.status).toBe(201);
-    expect(createRes.body).toEqual({
-      id: expect.any(String),
-      title: '[My Component] My Todo',
-      createdBy: mockCredentials.user().principal.userEntityRef,
-      createdAt: expect.any(String),
-    });
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'message is required' });
   });
 
-  it('should forward errors from the TodoListService', async () => {
+  it('should reject models requests without GitHub token', async () => {
     const { server } = await startTestBackend({
-      features: [
-        copilotChatPlugin,
-        createServiceFactory({
-          service: todoListServiceRef,
-          deps: {},
-          factory: () => ({
-            createTodo: jest.fn().mockRejectedValue(new ConflictError()),
-            listTodos: jest.fn().mockRejectedValue(new AuthenticationError()),
-            getTodo: jest.fn().mockRejectedValue(new NotAllowedError()),
-          }),
-        })
-      ],
+      features: [copilotChatPlugin],
     });
 
-    const createRes = await request(server)
-      .post('/api/copilot-chat/todos')
-      .send({ title: 'My Todo', entityRef: 'component:default/my-component' });
-    expect(createRes.status).toBe(409);
-    expect(createRes.body).toMatchObject({
-      error: { name: 'ConflictError' },
-    });
+    const response = await request(server).get('/api/copilot-chat/models');
 
-    const listRes = await request(server).get('/api/copilot-chat/todos');
-    expect(listRes.status).toBe(401);
-    expect(listRes.body).toMatchObject({
-      error: { name: 'AuthenticationError' },
-    });
-
-    const getRes = await request(server).get('/api/copilot-chat/todos/123');
-    expect(getRes.status).toBe(403);
-    expect(getRes.body).toMatchObject({
-      error: { name: 'NotAllowedError' },
-    });
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: 'Missing X-GitHub-Token header' });
   });
 });

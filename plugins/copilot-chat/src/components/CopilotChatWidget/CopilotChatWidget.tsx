@@ -8,10 +8,10 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import RemoveIcon from '@material-ui/icons/Remove';
-import { ChatMessage } from '../CopilotChatPage/types';
 import { MessageBubble } from '../CopilotChatPage/MessageBubble';
 import { ChatInput } from '../CopilotChatPage/ChatInput';
 import { TypingIndicator } from '../CopilotChatPage/TypingIndicator';
+import { useCopilotChat } from '../CopilotChatPage/useCopilotChat';
 import { CopilotIcon } from './CopilotIcon';
 import { WidgetEmptyState } from './WidgetEmptyState';
 
@@ -149,18 +149,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-let messageCounter = 0;
-function createId() {
-  messageCounter += 1;
-  return `msg-${Date.now()}-${messageCounter}`;
-}
-
 export const CopilotChatWidget = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { messages, isLoading, handleSend, handleClear } = useCopilotChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -170,41 +163,6 @@ export const CopilotChatWidget = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading, scrollToBottom]);
-
-  const simulateResponse = useCallback((userMessage: string) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: createId(),
-          role: 'assistant',
-          content: `Thanks for your question! I received: "${userMessage}"\n\nThis is a placeholder response. Once the backend plugin is connected to the GitHub Copilot SDK, I'll provide real answers.`,
-          timestamp: new Date(),
-        },
-      ]);
-      setIsLoading(false);
-    }, 1500);
-  }, []);
-
-  const handleSend = useCallback(
-    (text: string) => {
-      const userMsg: ChatMessage = {
-        id: createId(),
-        role: 'user',
-        content: text,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, userMsg]);
-      simulateResponse(text);
-    },
-    [simulateResponse],
-  );
-
-  const handleClear = useCallback(() => {
-    setMessages([]);
-    setIsLoading(false);
-  }, []);
 
   const hasMessages = messages.length > 0;
 

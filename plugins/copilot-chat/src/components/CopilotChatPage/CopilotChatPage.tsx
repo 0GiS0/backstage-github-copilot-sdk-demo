@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { Header, Page, Content } from '@backstage/core-components';
-import { ChatMessage } from './types';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { EmptyState } from './EmptyState';
 import { TypingIndicator } from './TypingIndicator';
+import { useCopilotChat } from './useCopilotChat';
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -36,16 +36,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-let messageCounter = 0;
-function createId() {
-  messageCounter += 1;
-  return `msg-${Date.now()}-${messageCounter}`;
-}
-
 export const CopilotChatPage = () => {
   const classes = useStyles();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { messages, isLoading, handleSend } = useCopilotChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -55,37 +48,6 @@ export const CopilotChatPage = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading, scrollToBottom]);
-
-  const simulateResponse = useCallback((userMessage: string) => {
-    setIsLoading(true);
-    // Simulate a backend response — this will be replaced with a real API call
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: createId(),
-          role: 'assistant',
-          content: `Thanks for your question! I received: "${userMessage}"\n\nThis is a placeholder response. Once the backend plugin is connected to the GitHub Copilot SDK, I'll provide real answers about your Backstage catalog, services, and developer workflows.`,
-          timestamp: new Date(),
-        },
-      ]);
-      setIsLoading(false);
-    }, 1500);
-  }, []);
-
-  const handleSend = useCallback(
-    (text: string) => {
-      const userMsg: ChatMessage = {
-        id: createId(),
-        role: 'user',
-        content: text,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, userMsg]);
-      simulateResponse(text);
-    },
-    [simulateResponse],
-  );
 
   const hasMessages = messages.length > 0;
 

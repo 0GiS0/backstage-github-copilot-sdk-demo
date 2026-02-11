@@ -5201,6 +5201,100 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@github/copilot-darwin-arm64@npm:0.0.403":
+  version: 0.0.403
+  resolution: "@github/copilot-darwin-arm64@npm:0.0.403"
+  bin:
+    copilot-darwin-arm64: copilot
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@github/copilot-darwin-x64@npm:0.0.403":
+  version: 0.0.403
+  resolution: "@github/copilot-darwin-x64@npm:0.0.403"
+  bin:
+    copilot-darwin-x64: copilot
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@github/copilot-linux-arm64@npm:0.0.403":
+  version: 0.0.403
+  resolution: "@github/copilot-linux-arm64@npm:0.0.403"
+  bin:
+    copilot-linux-arm64: copilot
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@github/copilot-linux-x64@npm:0.0.403":
+  version: 0.0.403
+  resolution: "@github/copilot-linux-x64@npm:0.0.403"
+  bin:
+    copilot-linux-x64: copilot
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@github/copilot-sdk@npm:^0.1.23":
+  version: 0.1.23
+  resolution: "@github/copilot-sdk@npm:0.1.23"
+  dependencies:
+    "@github/copilot": "npm:^0.0.403"
+    vscode-jsonrpc: "npm:^8.2.1"
+    zod: "npm:^4.3.6"
+  checksum: 10c0/461c32f7cb0258d303b72c64950e8cf785f74ca610366e863e64b4d23db80a985d87301a2b6af369635fdf69b11b2a08a86f0f914c43cbd7069aabf1a682a7c6
+  languageName: node
+  linkType: hard
+
+"@github/copilot-win32-arm64@npm:0.0.403":
+  version: 0.0.403
+  resolution: "@github/copilot-win32-arm64@npm:0.0.403"
+  bin:
+    copilot-win32-arm64: copilot.exe
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@github/copilot-win32-x64@npm:0.0.403":
+  version: 0.0.403
+  resolution: "@github/copilot-win32-x64@npm:0.0.403"
+  bin:
+    copilot-win32-x64: copilot.exe
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@github/copilot@npm:^0.0.403":
+  version: 0.0.403
+  resolution: "@github/copilot@npm:0.0.403"
+  dependencies:
+    "@github/copilot-darwin-arm64": "npm:0.0.403"
+    "@github/copilot-darwin-x64": "npm:0.0.403"
+    "@github/copilot-linux-arm64": "npm:0.0.403"
+    "@github/copilot-linux-x64": "npm:0.0.403"
+    "@github/copilot-win32-arm64": "npm:0.0.403"
+    "@github/copilot-win32-x64": "npm:0.0.403"
+  dependenciesMeta:
+    "@github/copilot-darwin-arm64":
+      optional: true
+    "@github/copilot-darwin-x64":
+      optional: true
+    "@github/copilot-linux-arm64":
+      optional: true
+    "@github/copilot-linux-x64":
+      optional: true
+    "@github/copilot-win32-arm64":
+      optional: true
+    "@github/copilot-win32-x64":
+      optional: true
+  bin:
+    copilot: npm-loader.js
+  checksum: 10c0/36a3ba1fbfc36d33bd10cbbe9ac5036968422205ec417415764bb154bb8cfba3c2980227b81ea9cd60e3b5185d4166587dc36454d6534a2c4f80563498194094
+  languageName: node
+  linkType: hard
+
 "@google-cloud/container@npm:^5.0.0":
   version: 5.19.0
   resolution: "@google-cloud/container@npm:5.19.0"
@@ -5818,6 +5912,7 @@ __metadata:
     "@backstage/errors": "npm:^1.2.7"
     "@backstage/plugin-catalog-node": "npm:^1.20.1"
     "@backstage/types": "npm:^1.2.2"
+    "@github/copilot-sdk": "npm:^0.1.23"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.12"
     express: "npm:^4.14.0"
@@ -33121,6 +33216,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vscode-jsonrpc@npm:^8.2.1":
+  version: 8.2.1
+  resolution: "vscode-jsonrpc@npm:8.2.1"
+  checksum: 10c0/595e07f779112d979d9cd37a00e4b973c39da09dd7c35b149f9fb7857c87db00d0ece7772c5a6f65cc19e38afc4fc64f8130d2f0e6b5f7fc160a0fc6b94e8c07
+  languageName: node
+  linkType: hard
+
 "vscode-languageserver-types@npm:^3.17.1":
   version: 3.17.5
   resolution: "vscode-languageserver-types@npm:3.17.5"
@@ -33782,6 +33884,13 @@ __metadata:
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
   checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.3.6":
+  version: 4.3.6
+  resolution: "zod@npm:4.3.6"
+  checksum: 10c0/860d25a81ab41d33aa25f8d0d07b091a04acb426e605f396227a796e9e800c44723ed96d0f53a512b57be3d1520f45bf69c0cb3b378a232a00787a2609625307
   languageName: node
   linkType: hard
 

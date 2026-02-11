@@ -3,7 +3,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import { todoListServiceRef } from './services/TodoListService';
 
 /**
  * copilotChatPlugin backend plugin
@@ -15,17 +14,25 @@ export const copilotChatPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        httpAuth: coreServices.httpAuth,
+        logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
-        todoList: todoListServiceRef,
       },
-      async init({ httpAuth, httpRouter, todoList }) {
+      async init({ logger, httpRouter }) {
         httpRouter.use(
           await createRouter({
-            httpAuth,
-            todoList,
+            logger,
           }),
         );
+        // Allow unauthenticated requests — the plugin uses the user's
+        // GitHub token (sent via header) instead of Backstage credentials.
+        httpRouter.addAuthPolicy({
+          path: '/chat',
+          allow: 'unauthenticated',
+        });
+        httpRouter.addAuthPolicy({
+          path: '/models',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

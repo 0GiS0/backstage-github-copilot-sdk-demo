@@ -30,6 +30,7 @@
     "@backstage/errors": "^1.2.7",
     "@backstage/plugin-catalog-node": "^1.20.1",
     "@backstage/types": "^1.2.2",
+    "@github/copilot-sdk": "^0.1.23",
     "express": "^4.14.0",
     "express-promise-router": "^4.1.0",
     "zod": "^3.25.76"
@@ -43,5 +44,10 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "^@github/copilot-sdk$": "<rootDir>/src/__mocks__/@github/copilot-sdk.ts"
+    }
+  }
 }
