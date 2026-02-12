@@ -35,15 +35,9 @@ backend:
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
-  # github:
-  #   - host: github.com
-  # This is a Personal Access Token or PAT from GitHub. You can find out how to generate this token, and more information
-  # about setting up the GitHub integration here: https://backstage.io/docs/integrations/github/locations#configuration
-  # token: ${GITHUB_TOKEN}
-  ### Example for how to add your GitHub Enterprise instance using the API:
-  # - host: ghe.example.net
-  #   apiBaseUrl: https://ghe.example.net/api/v3
-  #   token: ${GHE_TOKEN}
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
 
 proxy:
   ### Example for how to add a proxy endpoint for the frontend.
@@ -85,7 +79,7 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location]
+    - allow: [Component, System, API, Resource, Location, Template, Domain]
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
@@ -103,15 +97,59 @@ catalog:
       rules:
         - allow: [User, Group]
 
-    ## Uncomment these lines to add more example data
-    # - type: url
-    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
-
-    ## Uncomment these lines to add an example org
-    # - type: url
-    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
-    #   rules:
-    #     - allow: [User, Group]
+    # Software Templates from ghec-org-as-code (topic: backstage-copilot-sdk)
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-system/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-domain/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-node-service/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-fastapi-service/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-dotnet-service/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-dotnet-library/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-ai-assistant/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-mcp-server-node/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-astro-frontend/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-electron-desktop-app/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-kubernetes-gitops/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-springboot-service/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
+    - type: url
+      target: https://github.com/0GiS0/backstage-template-vue-frontend/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Template]
 # kubernetes:
 #   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
 
