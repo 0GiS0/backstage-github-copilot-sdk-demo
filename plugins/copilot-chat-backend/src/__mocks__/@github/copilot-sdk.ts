@@ -19,3 +19,11 @@ export class CopilotClient {
     };
   }
 }
+
+/**
+ * Mock defineTool – returns a serialisable tool descriptor that the SDK
+ * would normally build. Good enough for unit testing.
+ */
+export function defineTool(name: string, opts: any) {
+  return { name, ...opts };
+}

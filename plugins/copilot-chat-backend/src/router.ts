@@ -2,6 +2,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
 import { backstageExpertAgent } from './agents';
+import { createBackstageTools } from './tools';
 
 // @github/copilot-sdk is ESM-only; Backstage backend compiles to CJS,
 // so we lazy-load with dynamic import() which works from CJS → ESM.
@@ -25,6 +26,11 @@ const BACKSTAGE_MCP_SERVER = {
   tools: ['*'],
 };
 
+const GITHUB_MCP_SERVER = {
+  type: 'http' as const,
+  url: 'https://api.githubcopilot.com/mcp/',
+};
+
 export async function createRouter({
   logger,
 }: {
@@ -32,6 +38,11 @@ export async function createRouter({
 }): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
+
+  // ── Pre-load custom Backstage tools (lazy-loads defineTool from ESM SDK) ──
+  logger.info('[init] Creating custom Backstage catalog tools…');
+  const backstageTools = await createBackstageTools(logger);
+  logger.info(`[init] ${backstageTools.length} custom tools ready`);
 
   // ── GET /models ──────────────────────────────────────────────
   router.get('/models', async (req, res) => {
@@ -95,10 +106,16 @@ export async function createRouter({
     logger.info(`[chat] ── New chat request ──────────────────────`);
     logger.info(
       `[chat] Model: ${model}, Session: ${
-        incomingSessionId ? `${incomingSessionId.slice(0, 8)}… (existing)` : '(new)'
+        incomingSessionId
+          ? `${incomingSessionId.slice(0, 8)}… (existing)`
+          : '(new)'
       }`,
     );
-    logger.info(`[chat] Message: "${message.length > 120 ? `${message.slice(0, 120)}…` : message}"`);
+    logger.info(
+      `[chat] Message: "${
+        message.length > 120 ? `${message.slice(0, 120)}…` : message
+      }"`,
+    );
 
     // SSE headers
     res.setHeader('Content-Type', 'text/event-stream');
@@ -126,8 +143,10 @@ export async function createRouter({
         session = await client.resumeSession(sessionId, {
           model,
           streaming: true,
+          tools: backstageTools,
           mcpServers: {
             'backstage-mcp': BACKSTAGE_MCP_SERVER,
+            github: GITHUB_MCP_SERVER,
           },
           customAgents: [backstageExpertAgent],
         });
@@ -136,13 +155,20 @@ export async function createRouter({
         sessionId = `backstage-${Date.now()}-${Math.random()
           .toString(36)
           .slice(2, 8)}`;
-        logger.info(`[chat] Creating new session ${sessionId.slice(0, 8)}… (model: ${model})…`);
+        logger.info(
+          `[chat] Creating new session ${sessionId.slice(
+            0,
+            8,
+          )}… (model: ${model})…`,
+        );
         session = await client.createSession({
           sessionId,
           model,
           streaming: true,
+          tools: backstageTools,
           mcpServers: {
             'backstage-mcp': BACKSTAGE_MCP_SERVER,
+            github: GITHUB_MCP_SERVER,
           },
           customAgents: [backstageExpertAgent],
         });
@@ -164,7 +190,11 @@ export async function createRouter({
           const delta = event.data?.deltaContent ?? '';
           chunkCount++;
           if (chunkCount <= 3 || chunkCount % 20 === 0) {
-            logger.info(`[chat] Delta #${chunkCount}: "${delta.length > 80 ? `${delta.slice(0, 80)}…` : delta}"`);
+            logger.info(
+              `[chat] Delta #${chunkCount}: "${
+                delta.length > 80 ? `${delta.slice(0, 80)}…` : delta
+              }"`,
+            );
           }
           res.write(
             `data: ${JSON.stringify({ type: 'delta', content: delta })}\n\n`,
@@ -198,7 +228,9 @@ export async function createRouter({
       await client.stop();
 
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-      logger.info(`[chat] ✔ Response complete — ${chunkCount} chunks in ${elapsed}s`);
+      logger.info(
+        `[chat] ✔ Response complete — ${chunkCount} chunks in ${elapsed}s`,
+      );
 
       res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
       res.end();

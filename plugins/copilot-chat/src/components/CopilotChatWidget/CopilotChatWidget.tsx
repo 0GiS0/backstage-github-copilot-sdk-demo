@@ -18,10 +18,10 @@ import { useCopilotChat } from '../CopilotChatPage/useCopilotChat';
 import { CopilotIcon } from './CopilotIcon';
 import { WidgetEmptyState } from './WidgetEmptyState';
 
-const WIDGET_MIN_WIDTH = 340;
-const WIDGET_MIN_HEIGHT = 400;
-const WIDGET_DEFAULT_WIDTH = 400;
-const WIDGET_DEFAULT_HEIGHT = 560;
+const WIDGET_MIN_WIDTH = 380;
+const WIDGET_MIN_HEIGHT = 440;
+const WIDGET_DEFAULT_WIDTH = 520;
+const WIDGET_DEFAULT_HEIGHT = 640;
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -193,6 +193,34 @@ const useStyles = makeStyles(theme => ({
       borderRadius: 2,
     },
   },
+  fabBarsOverlay: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: 3,
+    height: 22,
+    padding: '4px 6px',
+    borderRadius: 10,
+    background: 'rgba(0,0,0,0.85)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+    pointerEvents: 'none',
+  },
+  fabBar: {
+    width: 4,
+    borderRadius: 2,
+    background: '#1db954',
+    animation: '$fabEqualizer 1.2s ease-in-out infinite',
+    '&:nth-child(1)': { animationDelay: '0s', height: 8 },
+    '&:nth-child(2)': { animationDelay: '0.15s', height: 16 },
+    '&:nth-child(3)': { animationDelay: '0.3s', height: 6 },
+    '&:nth-child(4)': { animationDelay: '0.45s', height: 12 },
+  },
+  '@keyframes fabEqualizer': {
+    '0%, 100%': { transform: 'scaleY(1)' },
+    '50%': { transform: 'scaleY(0.3)' },
+  },
   '@keyframes bounce': {
     '0%, 100%': { transform: 'translateY(0)' },
     '50%': { transform: 'translateY(-4px)' },
@@ -291,14 +319,22 @@ export const CopilotChatWidget = () => {
           >
             <CopilotIcon className={classes.fabIcon} />
             <div className={classes.badge} />
+            {!hasBeenOpened && (
+              <div className={classes.fabBarsOverlay}>
+                <div className={classes.fabBar} />
+                <div className={classes.fabBar} />
+                <div className={classes.fabBar} />
+                <div className={classes.fabBar} />
+              </div>
+            )}
           </Fab>
         </Fade>
       )}
 
-      {/* Pssst tooltip */}
+      {/* Singing tooltip */}
       {!open && !hasBeenOpened && (
         <Fade in>
-          <div className={classes.tooltip}>Pssst pssst... need help? 👀</div>
+          <div className={classes.tooltip}>🎤 Hey! I know a song about your catalog… 🎶</div>
         </Fade>
       )}
 

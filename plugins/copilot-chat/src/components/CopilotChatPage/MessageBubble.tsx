@@ -37,8 +37,8 @@ const useStyles = makeStyles(theme => ({
     border: `1px solid ${theme.palette.divider}`,
   },
   avatar: {
-    width: 28,
-    height: 28,
+    width: 36,
+    height: 36,
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
@@ -64,8 +64,8 @@ const useStyles = makeStyles(theme => ({
     objectFit: 'cover' as const,
   },
   copilotImg: {
-    width: 20,
-    height: 20,
+    width: 26,
+    height: 26,
   },
   time: {
     fontSize: '0.7rem',
