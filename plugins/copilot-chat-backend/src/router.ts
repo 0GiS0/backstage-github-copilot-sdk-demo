@@ -94,6 +94,7 @@ export async function createRouter({
       message,
       sessionId: incomingSessionId,
       model: requestedModel,
+      currentUrl,
     } = req.body;
 
     if (!message) {
@@ -116,6 +117,9 @@ export async function createRouter({
         message.length > 120 ? `${message.slice(0, 120)}…` : message
       }"`,
     );
+    if (currentUrl) {
+      logger.info(`[chat] Current URL: ${currentUrl}`);
+    }
 
     // SSE headers
     res.setHeader('Content-Type', 'text/event-stream');
@@ -214,8 +218,13 @@ export async function createRouter({
       req.on('close', onClose);
 
       // Send message and wait for full response
+      // Enrich prompt with current page context when available
+      let prompt = message;
+      if (currentUrl) {
+        prompt = `[Context: The user is currently viewing this page in Backstage: ${currentUrl}]\n\n${message}`;
+      }
       logger.info('[chat] Sending message to Copilot…');
-      await session.sendAndWait({ prompt: message });
+      await session.sendAndWait({ prompt });
       logger.info('[chat] sendAndWait completed');
 
       completed = true;

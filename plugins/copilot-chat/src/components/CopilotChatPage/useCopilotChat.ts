@@ -120,6 +120,7 @@ export function useCopilotChat() {
             message: text,
             sessionId: sessionIdRef.current,
             model: selectedModel,
+            currentUrl: window.location.href,
           }),
         });
 
