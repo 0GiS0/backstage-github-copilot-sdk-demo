@@ -1,6 +1,7 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
+import { backstageExpertAgent } from './agents';
 
 // @github/copilot-sdk is ESM-only; Backstage backend compiles to CJS,
 // so we lazy-load with dynamic import() which works from CJS → ESM.
@@ -40,11 +41,17 @@ export async function createRouter({
       return;
     }
 
+    logger.info('[models] Fetching available models…');
+
     try {
       const ClientClass = await getCopilotClient();
+      logger.info('[models] CopilotClient class loaded');
       const client = new ClientClass({ githubToken });
+      logger.info('[models] Starting client…');
       await client.start();
+      logger.info('[models] Client started, listing models…');
       const models = await client.listModels();
+      logger.info(`[models] Raw models returned: ${models.length}`);
 
       const available = models
         .filter((m: any) => m.policy?.state !== 'disabled')
@@ -55,10 +62,11 @@ export async function createRouter({
         }));
 
       await client.stop();
-      logger.info(`Listed ${available.length} models`);
+      logger.info(`[models] Listed ${available.length} available models`);
       res.json(available);
     } catch (err: any) {
-      logger.error(`Failed to list models: ${err.message}`);
+      logger.error(`[models] Failed to list models: ${err.message}`);
+      logger.error(`[models] Stack: ${err.stack}`);
       res.status(500).json({ error: 'Failed to list models' });
     }
   });
@@ -84,11 +92,13 @@ export async function createRouter({
 
     const model = requestedModel || DEFAULT_MODEL;
 
+    logger.info(`[chat] ── New chat request ──────────────────────`);
     logger.info(
-      `Chat request — model: ${model}, session: ${
-        incomingSessionId ? incomingSessionId.slice(0, 8) + '…' : '(new)'
+      `[chat] Model: ${model}, Session: ${
+        incomingSessionId ? `${incomingSessionId.slice(0, 8)}… (existing)` : '(new)'
       }`,
     );
+    logger.info(`[chat] Message: "${message.length > 120 ? `${message.slice(0, 120)}…` : message}"`);
 
     // SSE headers
     res.setHeader('Content-Type', 'text/event-stream');
@@ -101,25 +111,32 @@ export async function createRouter({
     let sessionId: string;
 
     try {
+      logger.info('[chat] Loading CopilotClient class…');
       const ClientClass = await getCopilotClient();
+      logger.info('[chat] Creating CopilotClient instance…');
       client = new ClientClass({ githubToken });
+      logger.info('[chat] Starting client…');
       await client.start();
+      logger.info('[chat] Client started successfully');
 
       // Create or resume session
       if (incomingSessionId) {
         sessionId = incomingSessionId;
+        logger.info(`[chat] Resuming session ${sessionId.slice(0, 8)}…`);
         session = await client.resumeSession(sessionId, {
           model,
           streaming: true,
           mcpServers: {
             'backstage-mcp': BACKSTAGE_MCP_SERVER,
           },
+          customAgents: [backstageExpertAgent],
         });
-        logger.info(`Resumed session ${sessionId.slice(0, 8)}…`);
+        logger.info(`[chat] Session resumed: ${sessionId.slice(0, 8)}…`);
       } else {
         sessionId = `backstage-${Date.now()}-${Math.random()
           .toString(36)
           .slice(2, 8)}`;
+        logger.info(`[chat] Creating new session ${sessionId.slice(0, 8)}… (model: ${model})…`);
         session = await client.createSession({
           sessionId,
           model,
@@ -127,8 +144,9 @@ export async function createRouter({
           mcpServers: {
             'backstage-mcp': BACKSTAGE_MCP_SERVER,
           },
+          customAgents: [backstageExpertAgent],
         });
-        logger.info(`Created session ${sessionId.slice(0, 8)}…`);
+        logger.info(`[chat] Session created: ${sessionId.slice(0, 8)}…`);
       }
 
       // Send session ID to client
@@ -145,6 +163,9 @@ export async function createRouter({
           if (completed) return;
           const delta = event.data?.deltaContent ?? '';
           chunkCount++;
+          if (chunkCount <= 3 || chunkCount % 20 === 0) {
+            logger.info(`[chat] Delta #${chunkCount}: "${delta.length > 80 ? `${delta.slice(0, 80)}…` : delta}"`);
+          }
           res.write(
             `data: ${JSON.stringify({ type: 'delta', content: delta })}\n\n`,
           );
@@ -163,22 +184,27 @@ export async function createRouter({
       req.on('close', onClose);
 
       // Send message and wait for full response
+      logger.info('[chat] Sending message to Copilot…');
       await session.sendAndWait({ prompt: message });
+      logger.info('[chat] sendAndWait completed');
 
       completed = true;
       unsubscribeDelta();
       req.off('close', onClose);
 
+      logger.info('[chat] Destroying session…');
       await session.destroy();
+      logger.info('[chat] Stopping client…');
       await client.stop();
 
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-      logger.info(`Response complete — ${chunkCount} chunks in ${elapsed}s`);
+      logger.info(`[chat] ✔ Response complete — ${chunkCount} chunks in ${elapsed}s`);
 
       res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
       res.end();
     } catch (err: any) {
-      logger.error(`Chat error: ${err.message}`);
+      logger.error(`[chat] ✖ Chat error: ${err.message}`);
+      logger.error(`[chat] Stack: ${err.stack}`);
 
       if (session) {
         try {

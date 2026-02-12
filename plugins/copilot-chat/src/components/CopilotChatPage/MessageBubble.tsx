@@ -1,5 +1,6 @@
 import { makeStyles, Typography } from '@material-ui/core';
 import { ChatMessage } from './types';
+import copilotLogo from '../../assets/copilot-logo.png';
 
 const useStyles = makeStyles(theme => ({
   row: {
@@ -46,16 +47,25 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 700,
     flexShrink: 0,
     marginTop: 2,
+    overflow: 'hidden',
   },
   avatarAssistant: {
-    background: theme.palette.type === 'dark' ? '#8b5cf6' : '#7c3aed',
-    color: '#fff',
+    background: '#000',
     marginRight: theme.spacing(1),
   },
   avatarUser: {
     background: theme.palette.type === 'dark' ? '#388bfd' : '#0969da',
     color: '#fff',
     marginLeft: theme.spacing(1),
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover' as const,
+  },
+  copilotImg: {
+    width: 20,
+    height: 20,
   },
   time: {
     fontSize: '0.7rem',
@@ -69,9 +79,13 @@ const useStyles = makeStyles(theme => ({
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  userAvatarUrl?: string;
 }
 
-export const MessageBubble = ({ message }: MessageBubbleProps) => {
+export const MessageBubble = ({
+  message,
+  userAvatarUrl,
+}: MessageBubbleProps) => {
   const classes = useStyles();
   const isUser = message.role === 'user';
 
@@ -87,7 +101,9 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
       }`}
     >
       {!isUser && (
-        <div className={`${classes.avatar} ${classes.avatarAssistant}`}>CP</div>
+        <div className={`${classes.avatar} ${classes.avatarAssistant}`}>
+          <img src={copilotLogo} alt="Copilot" className={classes.copilotImg} />
+        </div>
       )}
       <div className={classes.messageWrapper}>
         <div
@@ -104,7 +120,13 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
         </Typography>
       </div>
       {isUser && (
-        <div className={`${classes.avatar} ${classes.avatarUser}`}>U</div>
+        <div className={`${classes.avatar} ${classes.avatarUser}`}>
+          {userAvatarUrl ? (
+            <img src={userAvatarUrl} alt="User" className={classes.avatarImg} />
+          ) : (
+            'U'
+          )}
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,13 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useApi, githubAuthApiRef } from '@backstage/core-plugin-api';
 import { discoveryApiRef } from '@backstage/core-plugin-api';
 import { ChatMessage } from './types';
+
+export interface CopilotModel {
+  id: string;
+  name: string;
+  premiumRequests: number;
+}
 
 let messageCounter = 0;
 function createId() {
@@ -15,7 +21,62 @@ export function useCopilotChat() {
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string | undefined>();
+  const [models, setModels] = useState<CopilotModel[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>('gpt-4.1');
+  const [modelsLoading, setModelsLoading] = useState(false);
   const sessionIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    githubAuthApi
+      .getProfile({ optional: true })
+      .then(profile => {
+        if (profile?.picture) setUserAvatarUrl(profile.picture);
+      })
+      .catch(() => {});
+  }, [githubAuthApi]);
+
+  // Fetch available models on mount
+  useEffect(() => {
+    let cancelled = false;
+    async function loadModels() {
+      setModelsLoading(true);
+      try {
+        const githubToken = await githubAuthApi.getAccessToken(['read:user']);
+        const baseUrl = await discoveryApi.getBaseUrl('copilot-chat');
+        const response = await fetch(`${baseUrl}/models`, {
+          headers: { 'X-GitHub-Token': githubToken },
+        });
+        if (response.ok) {
+          const data: CopilotModel[] = await response.json();
+          if (!cancelled) {
+            setModels(data);
+            // Default to gpt-4.1 if available
+            const defaultModel = data.find(m => m.id === 'gpt-4.1');
+            if (defaultModel) {
+              setSelectedModel(defaultModel.id);
+            } else if (data.length > 0) {
+              setSelectedModel(data[0].id);
+            }
+          }
+        }
+      } catch {
+        // models will remain empty — selector won't show
+      } finally {
+        if (!cancelled) setModelsLoading(false);
+      }
+    }
+    loadModels();
+    return () => {
+      cancelled = true;
+    };
+  }, [githubAuthApi, discoveryApi]);
+
+  // When model changes, reset session so next message uses the new model
+  const changeModel = useCallback((modelId: string) => {
+    setSelectedModel(modelId);
+    sessionIdRef.current = null;
+  }, []);
 
   const handleSend = useCallback(
     async (text: string) => {
@@ -58,6 +119,7 @@ export function useCopilotChat() {
           body: JSON.stringify({
             message: text,
             sessionId: sessionIdRef.current,
+            model: selectedModel,
           }),
         });
 
@@ -137,7 +199,7 @@ export function useCopilotChat() {
         setIsLoading(false);
       }
     },
-    [githubAuthApi, discoveryApi],
+    [githubAuthApi, discoveryApi, selectedModel],
   );
 
   const handleClear = useCallback(() => {
@@ -146,5 +208,15 @@ export function useCopilotChat() {
     sessionIdRef.current = null;
   }, []);
 
-  return { messages, isLoading, handleSend, handleClear };
+  return {
+    messages,
+    isLoading,
+    handleSend,
+    handleClear,
+    userAvatarUrl,
+    models,
+    selectedModel,
+    changeModel,
+    modelsLoading,
+  };
 }

@@ -5,6 +5,7 @@ import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { EmptyState } from './EmptyState';
 import { TypingIndicator } from './TypingIndicator';
+import { ModelSelector } from './ModelSelector';
 import { useCopilotChat } from './useCopilotChat';
 
 const useStyles = makeStyles(theme => ({
@@ -14,6 +15,15 @@ const useStyles = makeStyles(theme => ({
     height: 'calc(100vh - 130px)',
     padding: 0,
     overflow: 'hidden',
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0.75, 2),
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    background: theme.palette.background.paper,
+    flexShrink: 0,
   },
   messagesArea: {
     flex: 1,
@@ -38,7 +48,16 @@ const useStyles = makeStyles(theme => ({
 
 export const CopilotChatPage = () => {
   const classes = useStyles();
-  const { messages, isLoading, handleSend } = useCopilotChat();
+  const {
+    messages,
+    isLoading,
+    handleSend,
+    userAvatarUrl,
+    models,
+    selectedModel,
+    changeModel,
+    modelsLoading,
+  } = useCopilotChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -49,16 +68,30 @@ export const CopilotChatPage = () => {
     scrollToBottom();
   }, [messages, isLoading, scrollToBottom]);
 
-  const hasMessages = messages.length > 0;
+  const visibleMessages = messages.filter(msg => msg.content !== '');
+  const hasMessages = visibleMessages.length > 0;
 
   return (
     <Page themeId="tool">
       <Header title="Copilot Chat" subtitle="Powered by GitHub Copilot SDK" />
       <Content className={classes.content}>
+        <div className={classes.toolbar}>
+          <ModelSelector
+            models={models}
+            selectedModel={selectedModel}
+            onChange={changeModel}
+            disabled={isLoading}
+            loading={modelsLoading}
+          />
+        </div>
         {hasMessages ? (
           <div className={classes.messagesArea}>
-            {messages.map(msg => (
-              <MessageBubble key={msg.id} message={msg} />
+            {visibleMessages.map(msg => (
+              <MessageBubble
+                key={msg.id}
+                message={msg}
+                userAvatarUrl={userAvatarUrl}
+              />
             ))}
             {isLoading && <TypingIndicator />}
             <div ref={messagesEndRef} />

@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core';
+import copilotLogo from '../../assets/copilot-logo.png';
 
 const useStyles = makeStyles(theme => ({
   row: {
@@ -13,13 +14,14 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '0.75rem',
-    fontWeight: 700,
-    background: theme.palette.type === 'dark' ? '#8b5cf6' : '#7c3aed',
-    color: '#fff',
+    background: '#000',
     marginRight: theme.spacing(1),
     flexShrink: 0,
     marginTop: 2,
+  },
+  copilotImg: {
+    width: 20,
+    height: 20,
   },
   bubble: {
     maxWidth: '75%',
@@ -56,7 +58,9 @@ export const TypingIndicator = () => {
 
   return (
     <div className={classes.row}>
-      <div className={classes.avatar}>CP</div>
+      <div className={classes.avatar}>
+        <img src={copilotLogo} alt="Copilot" className={classes.copilotImg} />
+      </div>
       <div className={classes.bubble}>
         <div className={classes.dots}>
           <div className={classes.dot} />

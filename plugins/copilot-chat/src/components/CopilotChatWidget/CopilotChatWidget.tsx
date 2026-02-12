@@ -13,6 +13,7 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import { MessageBubble } from '../CopilotChatPage/MessageBubble';
 import { ChatInput } from '../CopilotChatPage/ChatInput';
 import { TypingIndicator } from '../CopilotChatPage/TypingIndicator';
+import { ModelSelector } from '../CopilotChatPage/ModelSelector';
 import { useCopilotChat } from '../CopilotChatPage/useCopilotChat';
 import { CopilotIcon } from './CopilotIcon';
 import { WidgetEmptyState } from './WidgetEmptyState';
@@ -157,6 +158,15 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  modelToolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0.5, 1.5),
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    background: theme.palette.background.paper,
+    flexShrink: 0,
+  },
   tooltip: {
     position: 'fixed',
     bottom: theme.spacing(3) + 72 + 8,
@@ -198,7 +208,17 @@ export const CopilotChatWidget = () => {
     width: WIDGET_DEFAULT_WIDTH,
     height: WIDGET_DEFAULT_HEIGHT,
   });
-  const { messages, isLoading, handleSend, handleClear } = useCopilotChat();
+  const {
+    messages,
+    isLoading,
+    handleSend,
+    handleClear,
+    userAvatarUrl,
+    models,
+    selectedModel,
+    changeModel,
+    modelsLoading,
+  } = useCopilotChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const isResizing = useRef(false);
@@ -253,7 +273,8 @@ export const CopilotChatWidget = () => {
     setIsFullscreen(prev => !prev);
   }, []);
 
-  const hasMessages = messages.length > 0;
+  const visibleMessages = messages.filter(msg => msg.content !== '');
+  const hasMessages = visibleMessages.length > 0;
 
   return (
     <>
@@ -349,12 +370,25 @@ export const CopilotChatWidget = () => {
               <CloseIcon fontSize="small" />
             </IconButton>
           </div>
-
+          {/* Model selector */}
+          <div className={classes.modelToolbar}>
+            <ModelSelector
+              models={models}
+              selectedModel={selectedModel}
+              onChange={changeModel}
+              disabled={isLoading}
+              loading={modelsLoading}
+            />
+          </div>
           {/* Messages */}
           {hasMessages ? (
             <div className={classes.messagesArea}>
-              {messages.map(msg => (
-                <MessageBubble key={msg.id} message={msg} />
+              {visibleMessages.map(msg => (
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  userAvatarUrl={userAvatarUrl}
+                />
               ))}
               {isLoading && <TypingIndicator />}
               <div ref={messagesEndRef} />
