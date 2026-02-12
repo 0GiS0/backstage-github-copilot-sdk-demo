@@ -65,4 +65,9 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 
 backend.add(import('@internal/backstage-plugin-copilot-chat-backend'));
+
+
+// MCP Server Built-in
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
 backend.start();

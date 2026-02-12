@@ -15,6 +15,15 @@ async function getCopilotClient(): Promise<any> {
 
 const DEFAULT_MODEL = 'gpt-4.1';
 
+const BACKSTAGE_MCP_SERVER = {
+  type: 'http' as const,
+  url: 'http://localhost:7007/api/mcp-actions/v1',
+  headers: {
+    Authorization: 'Bearer mcp-test-token-local-dev',
+  },
+  tools: ['*'],
+};
+
 export async function createRouter({
   logger,
 }: {
@@ -102,6 +111,9 @@ export async function createRouter({
         session = await client.resumeSession(sessionId, {
           model,
           streaming: true,
+          mcpServers: {
+            'backstage-mcp': BACKSTAGE_MCP_SERVER,
+          },
         });
         logger.info(`Resumed session ${sessionId.slice(0, 8)}…`);
       } else {
@@ -112,6 +124,9 @@ export async function createRouter({
           sessionId,
           model,
           streaming: true,
+          mcpServers: {
+            'backstage-mcp': BACKSTAGE_MCP_SERVER,
+          },
         });
         logger.info(`Created session ${sessionId.slice(0, 8)}…`);
       }

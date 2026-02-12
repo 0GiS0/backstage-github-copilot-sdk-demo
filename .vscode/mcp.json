@@ -1,0 +1,11 @@
+{
+    "servers": {
+        "backstage-mcp": {
+            "url": "http://localhost:7007/api/mcp-actions/v1",
+            "type": "http",
+            "headers": {
+                "Authorization": "Bearer mcp-test-token-local-dev"
+            }
+        }
+    },
+}
