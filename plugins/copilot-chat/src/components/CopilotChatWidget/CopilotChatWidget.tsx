@@ -334,7 +334,9 @@ export const CopilotChatWidget = () => {
       {/* Singing tooltip */}
       {!open && !hasBeenOpened && (
         <Fade in>
-          <div className={classes.tooltip}>🎤 Hey! I know a song about your catalog… 🎶</div>
+          <div className={classes.tooltip}>
+            🎤 Hey! I know a song about your catalog… 🎶
+          </div>
         </Fade>
       )}
 
