@@ -10,6 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import RemoveIcon from '@material-ui/icons/Remove';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import { useLocation } from 'react-router-dom';
 import { MessageBubble } from '../CopilotChatPage/MessageBubble';
 import { ChatInput } from '../CopilotChatPage/ChatInput';
 import { TypingIndicator } from '../CopilotChatPage/TypingIndicator';
@@ -22,12 +23,28 @@ const WIDGET_MIN_WIDTH = 380;
 const WIDGET_MIN_HEIGHT = 440;
 const WIDGET_DEFAULT_WIDTH = 520;
 const WIDGET_DEFAULT_HEIGHT = 640;
+const FAB_SIZE = 72;
+const EDGE_OFFSET = 24;
+const PANEL_BOTTOM_OFFSET = 92;
+const TOOLTIP_APPROX_WIDTH = 320;
+const MOBILE_BREAKPOINT = 960;
+
+const getWidgetSide = (pathname: string, isCompactLayout: boolean) => {
+  if (isCompactLayout) {
+    return 'right';
+  }
+
+  if (pathname.startsWith('/create')) {
+    return 'left';
+  }
+
+  return 'right';
+};
 
 const useStyles = makeStyles(theme => ({
   fab: {
     position: 'fixed',
     bottom: theme.spacing(3),
-    right: theme.spacing(3),
     zIndex: theme.zIndex.snackbar + 1,
     background: '#000',
     color: '#fff',
@@ -38,7 +55,8 @@ const useStyles = makeStyles(theme => ({
       background: '#1a1a1a',
       boxShadow: '0 6px 28px rgba(0, 0, 0, 0.5)',
     },
-    transition: 'all 0.2s ease',
+    transition:
+      'right 0.32s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
   },
   fabIcon: {
     width: 46,
@@ -57,7 +75,6 @@ const useStyles = makeStyles(theme => ({
   panel: {
     position: 'fixed',
     bottom: theme.spacing(3) + 56 + 12,
-    right: theme.spacing(3),
     zIndex: theme.zIndex.snackbar + 1,
     borderRadius: 16,
     display: 'flex',
@@ -66,7 +83,8 @@ const useStyles = makeStyles(theme => ({
     background: theme.palette.background.paper,
     border: `1px solid ${theme.palette.divider}`,
     boxShadow: '0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)',
-    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+    transition:
+      'right 0.32s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), height 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
   },
   panelFullscreen: {
     position: 'fixed',
@@ -170,7 +188,6 @@ const useStyles = makeStyles(theme => ({
   tooltip: {
     position: 'fixed',
     bottom: theme.spacing(3) + 72 + 8,
-    right: theme.spacing(3),
     background: '#000',
     color: '#fff',
     padding: theme.spacing(1, 1.5),
@@ -181,6 +198,7 @@ const useStyles = makeStyles(theme => ({
     zIndex: theme.zIndex.snackbar + 1,
     whiteSpace: 'nowrap',
     animation: '$bounce 2s ease-in-out infinite',
+    transition: 'right 0.32s cubic-bezier(0.4, 0, 0.2, 1)',
     '&::after': {
       content: '""',
       position: 'absolute',
@@ -229,9 +247,13 @@ const useStyles = makeStyles(theme => ({
 
 export const CopilotChatWidget = () => {
   const classes = useStyles();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window === 'undefined' ? 1440 : window.innerWidth,
+  );
   const [size, setSize] = useState({
     width: WIDGET_DEFAULT_WIDTH,
     height: WIDGET_DEFAULT_HEIGHT,
@@ -258,6 +280,19 @@ export const CopilotChatWidget = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading, scrollToBottom]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Resize from top-left corner
   const handleResizeStart = useCallback(
@@ -303,6 +338,37 @@ export const CopilotChatWidget = () => {
 
   const visibleMessages = messages.filter(msg => msg.content !== '');
   const hasMessages = visibleMessages.length > 0;
+  const isCompactLayout = viewportWidth < MOBILE_BREAKPOINT;
+  const widgetSide = getWidgetSide(location.pathname, isCompactLayout);
+  const panelWidth = Math.min(
+    size.width,
+    Math.max(WIDGET_MIN_WIDTH, viewportWidth - EDGE_OFFSET * 2),
+  );
+
+  const getHorizontalOffset = (elementWidth: number) => {
+    if (widgetSide === 'right') {
+      return EDGE_OFFSET;
+    }
+
+    return Math.max(EDGE_OFFSET, viewportWidth - elementWidth - EDGE_OFFSET);
+  };
+
+  const fabStyle = {
+    right: getHorizontalOffset(FAB_SIZE),
+  } as const;
+
+  const tooltipStyle = {
+    right: getHorizontalOffset(TOOLTIP_APPROX_WIDTH),
+  } as const;
+
+  const panelStyle = isFullscreen
+    ? undefined
+    : {
+        width: panelWidth,
+        height: size.height,
+        right: getHorizontalOffset(panelWidth),
+        bottom: PANEL_BOTTOM_OFFSET,
+      };
 
   return (
     <>
@@ -311,6 +377,7 @@ export const CopilotChatWidget = () => {
         <Fade in>
           <Fab
             className={classes.fab}
+            style={fabStyle}
             onClick={() => {
               setOpen(true);
               setHasBeenOpened(true);
@@ -334,7 +401,7 @@ export const CopilotChatWidget = () => {
       {/* Singing tooltip */}
       {!open && !hasBeenOpened && (
         <Fade in>
-          <div className={classes.tooltip}>
+          <div className={classes.tooltip} style={tooltipStyle}>
             🎤 Hey! I know a song about your catalog… 🎶
           </div>
         </Fade>
@@ -347,11 +414,7 @@ export const CopilotChatWidget = () => {
           className={`${classes.panel} ${
             isFullscreen ? classes.panelFullscreen : ''
           }`}
-          style={
-            isFullscreen
-              ? undefined
-              : { width: size.width, height: size.height }
-          }
+          style={panelStyle}
         >
           {/* Resize handle (top-left, hidden in fullscreen) */}
           {!isFullscreen && (
@@ -447,6 +510,7 @@ export const CopilotChatWidget = () => {
         <Fade in>
           <Fab
             className={classes.fab}
+            style={fabStyle}
             onClick={() => {
               setOpen(false);
               setIsFullscreen(false);
