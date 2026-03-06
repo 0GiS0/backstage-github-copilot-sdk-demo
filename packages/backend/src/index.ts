@@ -66,8 +66,10 @@ backend.add(import('@backstage/plugin-signals-backend'));
 
 backend.add(import('@internal/backstage-plugin-copilot-chat-backend'));
 
-
 // MCP Server Built-in
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
+// Roadiehq
+backend.add(import('@roadiehq/scaffolder-backend-module-utils'));
 
 backend.start();
