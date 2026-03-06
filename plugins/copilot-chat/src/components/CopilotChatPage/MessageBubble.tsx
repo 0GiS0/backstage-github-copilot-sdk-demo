@@ -1,4 +1,6 @@
-import { makeStyles, Typography } from '@material-ui/core';
+import { Link, makeStyles, Typography } from '@material-ui/core';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ChatMessage } from './types';
 import copilotLogo from '../../assets/copilot-logo.png';
 
@@ -21,9 +23,11 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1.5, 2),
     borderRadius: 12,
     wordBreak: 'break-word' as const,
-    whiteSpace: 'pre-wrap' as const,
     lineHeight: 1.5,
     fontSize: '0.875rem',
+  },
+  plainText: {
+    whiteSpace: 'pre-wrap' as const,
   },
   bubbleUser: {
     background: theme.palette.type === 'dark' ? '#1a7f37' : '#dafbe1',
@@ -66,6 +70,62 @@ const useStyles = makeStyles(theme => ({
   copilotImg: {
     width: 26,
     height: 26,
+  },
+  markdown: {
+    '& > *:first-child': {
+      marginTop: 0,
+    },
+    '& > *:last-child': {
+      marginBottom: 0,
+    },
+    '& p': {
+      margin: `${theme.spacing(1)}px 0`,
+    },
+    '& ul, & ol': {
+      margin: `${theme.spacing(1)}px 0`,
+      paddingLeft: theme.spacing(3),
+    },
+    '& li + li': {
+      marginTop: theme.spacing(0.5),
+    },
+    '& code': {
+      fontFamily: 'monospace',
+      fontSize: '0.8125rem',
+      background: theme.palette.type === 'dark' ? '#161b22' : '#eaeef2',
+      borderRadius: 4,
+      padding: '0.1em 0.35em',
+    },
+    '& pre': {
+      overflowX: 'auto' as const,
+      background: theme.palette.type === 'dark' ? '#161b22' : '#eaeef2',
+      borderRadius: 8,
+      padding: theme.spacing(1.5),
+      margin: `${theme.spacing(1.5)}px 0`,
+    },
+    '& pre code': {
+      background: 'transparent',
+      padding: 0,
+      borderRadius: 0,
+    },
+    '& blockquote': {
+      margin: `${theme.spacing(1.5)}px 0`,
+      paddingLeft: theme.spacing(1.5),
+      borderLeft: `3px solid ${theme.palette.divider}`,
+      color: theme.palette.text.secondary,
+    },
+    '& table': {
+      width: '100%',
+      borderCollapse: 'collapse' as const,
+      margin: `${theme.spacing(1.5)}px 0`,
+    },
+    '& th, & td': {
+      border: `1px solid ${theme.palette.divider}`,
+      padding: theme.spacing(0.75, 1),
+      textAlign: 'left' as const,
+    },
+    '& a': {
+      wordBreak: 'break-all' as const,
+    },
   },
   time: {
     fontSize: '0.7rem',
@@ -111,7 +171,21 @@ export const MessageBubble = ({
             isUser ? classes.bubbleUser : classes.bubbleAssistant
           }`}
         >
-          {message.content}
+          {isUser ? (
+            <div className={classes.plainText}>{message.content}</div>
+          ) : (
+            <ReactMarkdown
+              className={classes.markdown}
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({ node: _node, ...props }) => (
+                  <Link {...props} target="_blank" rel="noreferrer" />
+                ),
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
+          )}
         </div>
         <Typography
           className={`${classes.time} ${isUser ? classes.timeUser : ''}`}

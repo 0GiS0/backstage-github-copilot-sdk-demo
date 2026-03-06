@@ -147,9 +147,9 @@ export const ChallengeTemplateListPage = (props: TemplateListPageProps) => {
                       Software Templates
                     </Typography>
                     <Typography className={classes.subtitle}>
-                      Use these templates to scaffold new services,
-                      components, and project foundations with the standard
-                      Backstage creation flow.
+                      Use these templates to scaffold new services, components,
+                      and project foundations with the standard Backstage
+                      creation flow.
                     </Typography>
                   </div>
                 </Grid>

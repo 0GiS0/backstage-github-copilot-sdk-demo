@@ -9,6 +9,8 @@ export interface CopilotModel {
   premiumRequests: number;
 }
 
+const DEFAULT_MODEL_ID = 'gpt-5.2';
+
 let messageCounter = 0;
 function createId() {
   messageCounter += 1;
@@ -23,7 +25,7 @@ export function useCopilotChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [userAvatarUrl, setUserAvatarUrl] = useState<string | undefined>();
   const [models, setModels] = useState<CopilotModel[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>('gpt-4.1');
+  const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL_ID);
   const [modelsLoading, setModelsLoading] = useState(false);
   const sessionIdRef = useRef<string | null>(null);
 
@@ -51,8 +53,8 @@ export function useCopilotChat() {
           const data: CopilotModel[] = await response.json();
           if (!cancelled) {
             setModels(data);
-            // Default to gpt-4.1 if available
-            const defaultModel = data.find(m => m.id === 'gpt-4.1');
+            // Default to GPT-5.2 if available
+            const defaultModel = data.find(m => m.id === DEFAULT_MODEL_ID);
             if (defaultModel) {
               setSelectedModel(defaultModel.id);
             } else if (data.length > 0) {
