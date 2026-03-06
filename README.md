@@ -13,15 +13,6 @@
 
 This repository demonstrates how to embed the **GitHub Copilot SDK** into a **Backstage** developer portal to deliver a catalog-aware, self-service assistant inside the portal.
 
-> Video demo: add your final link here (or reference the challenge submission).
-
-## 🏆 Challenge Submission (GitHub Copilot SDK Enterprise Challenge)
-- Docs (problem → solution, setup, RAI): [`/docs/README.md`](./docs/README.md)
-- Architecture diagram (Excalidraw source): [`/docs/architecture.excalidraw`](./docs/architecture.excalidraw)
-- Demo deck (1–2 slides): [`/presentations/CopilotSDKBackstageDemo.pptx`](./presentations/CopilotSDKBackstageDemo.pptx)
-- Agent instructions: [`AGENTS.md`](./AGENTS.md)
-- MCP configuration: [`mcp.json`](./mcp.json)
-
 ## Short project summary (≤150 words)
 This project demonstrates how the GitHub Copilot SDK can turn a Backstage developer portal into an AI-assisted, self-service platform experience. Inside Backstage, developers can chat with Copilot to discover catalog entities such as systems, components, and APIs, understand ownership and relationships, and ask contextual questions without leaving the portal. The assistant can also use page context from Backstage to explain a specific entity in place, answer follow-up questions about it, and guide users through the catalog. Beyond answering questions, Copilot acts as a self-service assistant that can create new projects directly from the software templates made available to developers, all through chat and without requiring them to fill out the standard scaffolder form. The solution combines a Copilot Chat UI plugin with a backend plugin that hosts the agent, tools, and guardrails.
 
