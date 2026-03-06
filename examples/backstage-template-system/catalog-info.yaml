@@ -36,11 +36,11 @@ spec:
           minLength: 1
           maxLength: 340
           pattern: "^.*\\S.*$"
-          ui:help: "Required field. Max 340 characters. Describe what this system does and its main purpose."
+          ui:help: 'Required field. Max 340 characters. Describe what this system does and its main purpose.'
           ui:options:
             inputProps:
               maxLength: 340
-              placeholder: "Enter a clear, concise description of this system..."
+              placeholder: 'Enter a clear, concise description of this system...'
           ui:widget: textarea
         owner:
           title: 👥 Select the team that owns this system
@@ -79,7 +79,7 @@ spec:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
           description: ${{ parameters.description }}
-          domain: ${{ parameters.domain | parseEntityRef | pick('name') }}
+            domain: ${{ parameters.domain }}
           repoUrl: ${{ parameters.repoUrl }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
 
@@ -89,21 +89,19 @@ spec:
       input:
         repoUrl: ${{ parameters.repoUrl }}
         description: ${{ parameters.description }}
-        topics:
-          ["backstage-include", "0GiS0", "system", "catalog"]
+        topics: ['backstage-include', '0GiS0', 'system', 'catalog']
         defaultBranch: main
         gitCommitMessage: Create System entity from template
         customProperties:
-          service-tier: "tier-2"
+          service-tier: 'tier-2'
           team-owner: ${{ parameters.owner }}
-          demo: "no"
+          demo: 'no'
 
     - id: register
       name: 📋 Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps["publish"].output.repoContentsUrl }}
-        catalogInfoPath: "/catalog-info.yaml"
+        catalogInfoUrl: "https://github.com/${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}/blob/main/catalog-info.yaml"
 
   output:
     links:

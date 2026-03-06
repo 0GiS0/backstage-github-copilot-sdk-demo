@@ -27,6 +27,7 @@ spec:
         - owner
         - clusterName
         - environment
+        - repoUrl
       properties:
         name:
           type: string
@@ -61,6 +62,15 @@ spec:
             - staging
             - production
           default: development
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - 0GiS0
 
   steps:
     - id: fetch-base
@@ -74,16 +84,18 @@ spec:
           owner: ${{ parameters.owner }}
           clusterName: ${{ parameters.clusterName }}
           environment: ${{ parameters.environment }}
+          repoUrl: ${{ parameters.repoUrl }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
 
     - id: publish
       name: 🚀 Publish Repository
       action: publish:github
       input:
         description: ${{ parameters.description }}
-        repoUrl: github.com?owner=0GiS0&repo=${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
         topics:
           - backstage-include
-          - 0GiS0
+          - ${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}
           - kubernetes
           - gitops
           - ${{ parameters.environment }}
@@ -96,8 +108,7 @@ spec:
       name: 📝 Register in Catalog
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
+        catalogInfoUrl: "https://github.com/${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}/blob/main/catalog-info.yaml"
 
   output:
     links:

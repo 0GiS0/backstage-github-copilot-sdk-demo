@@ -25,30 +25,9 @@ const WIDGET_DEFAULT_WIDTH = 520;
 const WIDGET_DEFAULT_HEIGHT = 640;
 const FAB_SIZE = 72;
 const EDGE_OFFSET = 24;
-const CREATE_PAGE_LEFT_OFFSET = 256;
 const PANEL_BOTTOM_OFFSET = 92;
 const TOOLTIP_APPROX_WIDTH = 320;
 const MOBILE_BREAKPOINT = 960;
-
-const getWidgetSide = (pathname: string, isCompactLayout: boolean) => {
-  if (isCompactLayout) {
-    return 'right';
-  }
-
-  if (pathname.startsWith('/create')) {
-    return 'left';
-  }
-
-  return 'right';
-};
-
-const getWidgetOffset = (pathname: string, isCompactLayout: boolean) => {
-  if (!isCompactLayout && pathname.startsWith('/create')) {
-    return CREATE_PAGE_LEFT_OFFSET;
-  }
-
-  return EDGE_OFFSET;
-};
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -65,7 +44,7 @@ const useStyles = makeStyles(theme => ({
       boxShadow: '0 6px 28px rgba(0, 0, 0, 0.5)',
     },
     transition:
-      'right 0.32s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
+      'right 0.32s cubic-bezier(0.4, 0, 0.2, 1), top 0.2s ease, bottom 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
   },
   fabIcon: {
     width: 46,
@@ -348,8 +327,10 @@ export const CopilotChatWidget = () => {
   const visibleMessages = messages.filter(msg => msg.content !== '');
   const hasMessages = visibleMessages.length > 0;
   const isCompactLayout = viewportWidth < MOBILE_BREAKPOINT;
-  const widgetSide = getWidgetSide(location.pathname, isCompactLayout);
-  const widgetOffset = getWidgetOffset(location.pathname, isCompactLayout);
+  const isHomePage = location.pathname === '/';
+  const widgetSide = 'right';
+  const widgetOffset = EDGE_OFFSET;
+  const shouldDockFabTopRight = !open && !isHomePage && !isCompactLayout;
   const panelWidth = Math.min(
     size.width,
     Math.max(WIDGET_MIN_WIDTH, viewportWidth - widgetOffset - EDGE_OFFSET),
@@ -363,9 +344,15 @@ export const CopilotChatWidget = () => {
     return Math.max(EDGE_OFFSET, viewportWidth - elementWidth - widgetOffset);
   };
 
-  const fabStyle = {
-    right: getHorizontalOffset(FAB_SIZE),
-  } as const;
+  const fabStyle = shouldDockFabTopRight
+    ? {
+        right: getHorizontalOffset(FAB_SIZE),
+        top: EDGE_OFFSET,
+        bottom: 'auto',
+      }
+    : {
+        right: getHorizontalOffset(FAB_SIZE),
+      };
 
   const tooltipStyle = {
     right: getHorizontalOffset(TOOLTIP_APPROX_WIDTH),
@@ -409,7 +396,7 @@ export const CopilotChatWidget = () => {
       )}
 
       {/* Singing tooltip */}
-      {!open && !hasBeenOpened && (
+      {!open && !hasBeenOpened && isHomePage && (
         <Fade in>
           <div className={classes.tooltip} style={tooltipStyle}>
             🎤 Hey! I know a song about your catalog… 🎶

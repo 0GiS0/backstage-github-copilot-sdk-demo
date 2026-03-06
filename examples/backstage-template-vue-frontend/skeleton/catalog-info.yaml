@@ -8,6 +8,13 @@ metadata:
   annotations:
     backstage.io/techdocs-ref: dir:.
     github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
+  links:
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}
+      title: Repository
+      icon: github
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}/tree/main/docs
+      title: Docs
+      icon: docs
   tags:
     - vue
     - frontend

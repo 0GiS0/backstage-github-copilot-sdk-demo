@@ -13,8 +13,8 @@ metadata:
     - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
       title: Demo workspace
       icon: github
-    - url: http://localhost:3000/docs/default/domain/developer-chaos
-      title: TechDocs
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo/blob/main/examples/catalog-docs/developer-chaos/docs/index.md
+      title: Docs source
       icon: docs
   tags:
     - internal
@@ -37,8 +37,8 @@ metadata:
     - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
       title: Demo workspace
       icon: github
-    - url: http://localhost:3000/docs/default/system/meme-factory
-      title: TechDocs
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo/blob/main/examples/catalog-docs/meme-factory/docs/index.md
+      title: Docs source
       icon: docs
   tags:
     - memes
@@ -62,8 +62,8 @@ metadata:
     - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
       title: Demo workspace
       icon: github
-    - url: http://localhost:3000/docs/default/resource/meme-vault
-      title: TechDocs
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo/blob/main/examples/catalog-docs/meme-vault/docs/index.md
+      title: Docs source
       icon: docs
   tags:
     - storage
@@ -92,8 +92,8 @@ metadata:
     - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
       title: Demo workspace
       icon: github
-    - url: http://localhost:3000/docs/default/component/meme-factory-web
-      title: TechDocs
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo/blob/main/examples/catalog-docs/meme-factory-web/docs/index.md
+      title: Docs source
       icon: docs
   tags:
     - astro
@@ -122,8 +122,8 @@ metadata:
     - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
       title: Demo workspace
       icon: github
-    - url: http://localhost:3000/docs/default/component/meme-factory-api
-      title: TechDocs
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo/blob/main/examples/catalog-docs/meme-factory-api/docs/index.md
+      title: Docs source
       icon: docs
   tags:
     - nodejs
@@ -154,8 +154,8 @@ metadata:
     - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
       title: Demo workspace
       icon: github
-    - url: http://localhost:3000/docs/default/component/meme-captioner
-      title: TechDocs
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo/blob/main/examples/catalog-docs/meme-captioner/docs/index.md
+      title: Docs source
       icon: docs
   tags:
     - ai
@@ -186,8 +186,8 @@ metadata:
     - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
       title: Demo workspace
       icon: github
-    - url: http://localhost:3000/docs/default/api/meme-factory-http-api
-      title: TechDocs
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo/blob/main/examples/catalog-docs/meme-factory-http-api/docs/index.md
+      title: Docs source
       icon: docs
   tags:
     - openapi

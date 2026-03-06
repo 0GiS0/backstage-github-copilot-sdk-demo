@@ -1,5 +1,5 @@
 site_name: '${{values.name}}'
-site_description: 'System documentation for ${{values.name}}'
+site_description: 'Desktop application documentation for ${{values.name}}'
 repo_url: 'https://github.com/${{values.destination.owner}}/${{values.destination.repo}}'
 repo_name: '${{values.destination.owner}}/${{values.destination.repo}}'
 

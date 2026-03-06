@@ -1,0 +1,13 @@
+site_name: '${{ values.name }}'
+site_description: 'GitOps system documentation for ${{ values.name }}'
+repo_url: 'https://github.com/${{ values.destination.owner }}/${{ values.destination.repo }}'
+repo_name: '${{ values.destination.owner }}/${{ values.destination.repo }}'
+
+nav:
+  - Overview: index.md
+
+theme:
+  name: material
+
+plugins:
+  - search
