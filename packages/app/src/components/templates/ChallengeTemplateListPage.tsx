@@ -182,21 +182,23 @@ export const ChallengeTemplateListPage = (props: TemplateListPageProps) => {
 
             <Paper className={classes.filtersFrame} elevation={0}>
               <Content>
-                <ContentHeader className={classes.contentHeader}>
-                  <Button
-                    className={classes.importButton}
-                    variant="outlined"
-                    color="primary"
-                    href="/catalog-import"
-                    endIcon={<ArrowForwardIcon />}
-                  >
-                    Register Existing Component
-                  </Button>
-                  <SupportButton>
-                    Browse local templates, filter them by category and owner,
-                    or jump straight into the creation flow.
-                  </SupportButton>
-                </ContentHeader>
+                <div className={classes.contentHeader}>
+                  <ContentHeader>
+                    <Button
+                      className={classes.importButton}
+                      variant="outlined"
+                      color="primary"
+                      href="/catalog-import"
+                      endIcon={<ArrowForwardIcon />}
+                    >
+                      Register Existing Component
+                    </Button>
+                    <SupportButton>
+                      Browse local templates, filter them by category and
+                      owner, or jump straight into the creation flow.
+                    </SupportButton>
+                  </ContentHeader>
+                </div>
                 <CatalogFilterLayout>
                   <CatalogFilterLayout.Filters>
                     <EntitySearchBar />

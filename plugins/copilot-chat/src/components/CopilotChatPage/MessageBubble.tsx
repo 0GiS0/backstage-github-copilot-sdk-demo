@@ -1,4 +1,5 @@
 import { Link, makeStyles, Typography } from '@material-ui/core';
+import type { LinkProps } from '@material-ui/core/Link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ChatMessage } from './types';
@@ -178,9 +179,13 @@ export const MessageBubble = ({
               className={classes.markdown}
               remarkPlugins={[remarkGfm]}
               components={{
-                a: ({ node: _node, ...props }) => (
-                  <Link {...props} target="_blank" rel="noreferrer" />
-                ),
+                a: ({ node: _node, color: _color, ...props }) => {
+                  const linkProps = props as LinkProps<'a'>;
+
+                  return (
+                    <Link {...linkProps} target="_blank" rel="noreferrer" />
+                  );
+                },
               }}
             >
               {message.content}

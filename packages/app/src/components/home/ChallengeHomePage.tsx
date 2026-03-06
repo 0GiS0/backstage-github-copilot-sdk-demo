@@ -27,6 +27,9 @@ const useStyles = makeStyles(theme => ({
     background:
       'radial-gradient(circle at top left, rgba(94,234,212,0.16), transparent 32%), radial-gradient(circle at top right, rgba(251,191,36,0.14), transparent 24%), linear-gradient(180deg, #08111a 0%, #0f1723 38%, #f4efe6 38%, #f4efe6 100%)',
     minHeight: '100vh',
+    [theme.breakpoints.up('md')]: {
+      padding: theme.spacing(5, 0, 9),
+    },
   },
   shell: {
     position: 'relative',
@@ -36,6 +39,9 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     padding: theme.spacing(0, 2),
     boxSizing: 'border-box',
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(0, 1),
+    },
   },
   hero: {
     position: 'relative',
@@ -49,6 +55,10 @@ const useStyles = makeStyles(theme => ({
     border: '1px solid rgba(125, 243, 225, 0.2)',
     boxShadow: '0 24px 70px rgba(2, 8, 23, 0.20)',
     minHeight: 420,
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(3),
+      minHeight: 'auto',
+    },
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -116,6 +126,10 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
     gap: theme.spacing(1.25),
     maxWidth: 860,
+    [theme.breakpoints.down('sm')]: {
+      gridTemplateColumns: '1fr',
+      maxWidth: '100%',
+    },
   },
   statCard: {
     borderRadius: 18,
@@ -139,12 +153,19 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-end',
     alignItems: 'center',
     minHeight: '100%',
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'center',
+      paddingTop: theme.spacing(1),
+    },
   },
   artwork: {
     width: 'clamp(260px, 28vw, 440px)',
     maxWidth: '100%',
     filter: 'drop-shadow(0 24px 48px rgba(2, 8, 23, 0.34))',
     animation: '$floatArtwork 6.2s ease-in-out infinite',
+    [theme.breakpoints.down('sm')]: {
+      width: 'min(78vw, 360px)',
+    },
   },
   footerNote: {
     marginTop: theme.spacing(1),
@@ -163,6 +184,9 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
     gap: theme.spacing(1.5),
     marginTop: theme.spacing(1.5),
+    [theme.breakpoints.down('sm')]: {
+      gridTemplateColumns: '1fr',
+    },
   },
   footerFeature: {
     display: 'flex',
@@ -192,34 +216,6 @@ const useStyles = makeStyles(theme => ({
   footerFeatureBody: {
     color: '#52525b',
     lineHeight: 1.55,
-  },
-  '@media (max-width: 960px)': {
-    shell: {
-      padding: theme.spacing(0, 1),
-    },
-    hero: {
-      padding: theme.spacing(3),
-      minHeight: 'auto',
-    },
-    statRail: {
-      gridTemplateColumns: '1fr',
-      maxWidth: '100%',
-    },
-    artworkWrap: {
-      justifyContent: 'center',
-      paddingTop: theme.spacing(1),
-    },
-    artwork: {
-      width: 'min(78vw, 360px)',
-    },
-    footerGrid: {
-      gridTemplateColumns: '1fr',
-    },
-  },
-  '@media (min-width: 961px)': {
-    content: {
-      padding: theme.spacing(5, 0, 9),
-    },
   },
   '@keyframes floatArtwork': {
     '0%': {
