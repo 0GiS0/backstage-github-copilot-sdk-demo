@@ -7,6 +7,19 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 const BACKSTAGE_BASE_URL = 'http://localhost:7007';
+const BACKSTAGE_APP_BASE_URL = 'http://localhost:3000';
+
+type BackstageRequestOptions = {
+  method?: 'GET' | 'POST';
+  body?: unknown;
+};
+
+type TemplateRefParts = {
+  kind: string;
+  namespace: string;
+  name: string;
+  entityRef: string;
+};
 
 // ── Lazy-load defineTool from the ESM-only SDK ──────────────────
 let _defineTool: any;
@@ -19,22 +32,153 @@ async function getDefineTool(): Promise<any> {
 }
 
 // ── Internal helper to call Backstage APIs ──────────────────────
+async function backstageRequest(
+  path: string,
+  logger: LoggerService,
+  options: BackstageRequestOptions = {},
+): Promise<any> {
+  const url = `${BACKSTAGE_BASE_URL}${path}`;
+  logger.info(`[tool] ${options.method ?? 'GET'} ${url}`);
+  const response = await fetch(url, {
+    method: options.method ?? 'GET',
+    headers: {
+      Authorization: 'Bearer mcp-test-token-local-dev',
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    ...(options.body ? { body: JSON.stringify(options.body) } : {}),
+  });
+
+  const contentType = response.headers.get('content-type') || '';
+  const payload = contentType.includes('application/json')
+    ? await response.json()
+    : await response.text();
+
+  if (!response.ok) {
+    const text =
+      typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2);
+    throw new Error(`Backstage API ${response.status}: ${text}`);
+  }
+
+  return payload;
+}
+
 async function backstageFetch(
   path: string,
   logger: LoggerService,
 ): Promise<any> {
-  const url = `${BACKSTAGE_BASE_URL}${path}`;
-  logger.info(`[tool] Fetching ${url}`);
-  const response = await fetch(url, {
-    headers: {
-      Authorization: 'Bearer mcp-test-token-local-dev',
-    },
-  });
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Backstage API ${response.status}: ${text}`);
+  return backstageRequest(path, logger);
+}
+
+function parseTemplateRef(input: string): TemplateRefParts {
+  const trimmed = input.trim();
+
+  if (!trimmed) {
+    throw new Error('Template reference cannot be empty');
   }
-  return response.json();
+
+  if (trimmed.includes(':') && trimmed.includes('/')) {
+    const [kindPart, rest] = trimmed.split(':', 2);
+    const [namespacePart, namePart] = rest.split('/', 2);
+
+    if (!kindPart || !namespacePart || !namePart) {
+      throw new Error(
+        `Invalid templateRef "${input}". Expected format template:namespace/name`,
+      );
+    }
+
+    return {
+      kind: kindPart,
+      namespace: namespacePart,
+      name: namePart,
+      entityRef: `${kindPart}:${namespacePart}/${namePart}`,
+    };
+  }
+
+  if (trimmed.includes('/')) {
+    const [namespacePart, namePart] = trimmed.split('/', 2);
+    if (!namespacePart || !namePart) {
+      throw new Error(
+        `Invalid template reference "${input}". Expected namespace/name or template:namespace/name`,
+      );
+    }
+
+    return {
+      kind: 'template',
+      namespace: namespacePart,
+      name: namePart,
+      entityRef: `template:${namespacePart}/${namePart}`,
+    };
+  }
+
+  return {
+    kind: 'template',
+    namespace: 'default',
+    name: trimmed,
+    entityRef: `template:default/${trimmed}`,
+  };
+}
+
+function summarizeParameterSchema(parameters: any[] = []) {
+  return parameters.flatMap((section: any, index: number) => {
+    const requiredFields = new Set<string>(section?.required || []);
+    const properties = section?.properties || {};
+
+    return [
+      {
+        sectionTitle: section?.title || `Section ${index + 1}`,
+        description: section?.description,
+        fields: Object.entries(properties).map(([name, definition]: [string, any]) => ({
+          name,
+          title: definition?.title || name,
+          type: definition?.type || 'object',
+          description: definition?.description,
+          required: requiredFields.has(name),
+          default: definition?.default,
+          enum: definition?.enum,
+          enumNames: definition?.enumNames,
+          uiField: definition?.['ui:field'],
+          uiWidget: definition?.['ui:widget'],
+        })),
+      },
+    ];
+  });
+}
+
+function getRequiredFieldNames(parameters: any[] = []) {
+  return Array.from(
+    new Set(
+      parameters.flatMap((section: any) =>
+        Array.isArray(section?.required) ? section.required : [],
+      ),
+    ),
+  );
+}
+
+function formatTemplateDetails(entity: any) {
+  const namespace = entity.metadata?.namespace || 'default';
+  const entityRef = `template:${namespace}/${entity.metadata?.name}`;
+  const parameters = Array.isArray(entity.spec?.parameters)
+    ? entity.spec.parameters
+    : [];
+
+  return {
+    entityRef,
+    name: entity.metadata?.name,
+    namespace,
+    title: entity.metadata?.title || entity.metadata?.name,
+    description: entity.metadata?.description || 'No description',
+    owner: entity.spec?.owner,
+    type: entity.spec?.type,
+    tags: entity.metadata?.tags || [],
+    steps:
+      entity.spec?.steps?.map((step: any) => ({
+        id: step.id,
+        name: step.name,
+        action: step.action,
+      })) || [],
+    requiredFields: getRequiredFieldNames(parameters),
+    parameterSections: summarizeParameterSchema(parameters),
+  };
 }
 
 /**
@@ -179,10 +323,14 @@ export async function createBackstageTools(logger: LoggerService) {
       );
 
       return data.map((entity: any) => ({
+        entityRef: `template:${entity.metadata?.namespace || 'default'}/${
+          entity.metadata?.name
+        }`,
         name: entity.metadata?.name,
         title: entity.metadata?.title || entity.metadata?.name,
         description: entity.metadata?.description || 'No description',
         tags: entity.metadata?.tags || [],
+        owner: entity.spec?.owner,
         type: entity.spec?.type,
         steps: entity.spec?.steps?.length ?? 0,
         parameters:
@@ -192,7 +340,131 @@ export async function createBackstageTools(logger: LoggerService) {
     },
   });
 
-  // ── 4. Search entities ────────────────────────────────────────
+  // ── 4. Get full template details & parameter schema ──────────
+  const getTemplateDetails = defineTool('backstage_get_template_details', {
+    description:
+      'Get the full details of a Backstage Software Template, including its required parameters, field descriptions, enum choices, and scaffolder steps. ' +
+      'Use this before creating a project from chat so you can ask the user only for missing required values.',
+    parameters: {
+      type: 'object',
+      properties: {
+        templateRef: {
+          type: 'string',
+          description:
+            'Template entity reference. Accepts template:namespace/name, namespace/name, or just the template name.',
+        },
+      },
+      required: ['templateRef'],
+    },
+    handler: async (args: { templateRef: string }) => {
+      const template = parseTemplateRef(args.templateRef);
+      const entity = await backstageFetch(
+        `/api/catalog/entities/by-name/${template.kind}/${template.namespace}/${template.name}`,
+        logger,
+      );
+
+      logger.info(
+        `[tool] backstage_get_template_details returned ${template.entityRef}`,
+      );
+
+      return formatTemplateDetails(entity);
+    },
+  });
+
+  // ── 5. Create scaffolder task ────────────────────────────────
+  const createScaffolderTask = defineTool('backstage_create_scaffolder_task', {
+    description:
+      'Launch a Backstage Software Template by creating a scaffolder task. ' +
+      'Only call this after you have collected all required values from the user and confirmed them.',
+    parameters: {
+      type: 'object',
+      properties: {
+        templateRef: {
+          type: 'string',
+          description:
+            'Template entity reference. Accepts template:namespace/name, namespace/name, or just the template name.',
+        },
+        values: {
+          type: 'object',
+          description:
+            'The parameter values to send to the scaffolder task. Keys must match the template parameter names.',
+          additionalProperties: true,
+        },
+      },
+      required: ['templateRef', 'values'],
+    },
+    handler: async (args: {
+      templateRef: string;
+      values: Record<string, unknown>;
+    }) => {
+      const template = parseTemplateRef(args.templateRef);
+      const result = await backstageRequest(
+        '/api/scaffolder/v2/tasks',
+        logger,
+        {
+          method: 'POST',
+          body: {
+            templateRef: template.entityRef,
+            values: args.values,
+          },
+        },
+      );
+
+      logger.info(
+        `[tool] backstage_create_scaffolder_task created ${result.id} from ${template.entityRef}`,
+      );
+
+      return {
+        taskId: result.id,
+        templateRef: template.entityRef,
+        values: args.values,
+        taskPath: `/create/tasks/${result.id}`,
+        taskUrl: `${BACKSTAGE_APP_BASE_URL}/create/tasks/${result.id}`,
+        apiTaskUrl: `${BACKSTAGE_BASE_URL}/api/scaffolder/v2/tasks/${result.id}`,
+      };
+    },
+  });
+
+  // ── 6. Read scaffolder task status ───────────────────────────
+  const getScaffolderTask = defineTool('backstage_get_scaffolder_task', {
+    description:
+      'Get the current status of a Backstage scaffolder task by task ID. ' +
+      'Use this after creating a project when the user asks whether it finished or failed.',
+    parameters: {
+      type: 'object',
+      properties: {
+        taskId: {
+          type: 'string',
+          description: 'The Backstage scaffolder task ID',
+        },
+      },
+      required: ['taskId'],
+    },
+    handler: async (args: { taskId: string }) => {
+      const task = await backstageFetch(
+        `/api/scaffolder/v2/tasks/${args.taskId}`,
+        logger,
+      );
+
+      logger.info(
+        `[tool] backstage_get_scaffolder_task returned ${args.taskId}`,
+      );
+
+      return {
+        id: task.id,
+        status: task.status,
+        lastHeartbeatAt: task.lastHeartbeatAt,
+        createdAt: task.createdAt,
+        completedAt: task.completedAt,
+        error: task.error,
+        templateRef: task.spec?.templateInfo?.entityRef,
+        taskPath: `/create/tasks/${task.id}`,
+        taskUrl: `${BACKSTAGE_APP_BASE_URL}/create/tasks/${task.id}`,
+      };
+    },
+  });
+
+  // ── 7. Search entities ────────────────────────────────────────
   const searchEntities = defineTool('backstage_search', {
     description:
       'Full-text search across all entities, documentation (TechDocs), and other content indexed in Backstage. ' +
@@ -230,7 +502,7 @@ export async function createBackstageTools(logger: LoggerService) {
     },
   });
 
-  // ── 5. List entity kinds summary (stats) ──────────────────────
+  // ── 8. List entity kinds summary (stats) ──────────────────────
   const catalogStats = defineTool('backstage_catalog_stats', {
     description:
       'Get a summary / overview of the Backstage catalog: how many entities of each kind exist. ' +
@@ -257,5 +529,14 @@ export async function createBackstageTools(logger: LoggerService) {
     },
   });
 
-  return [listEntities, getEntity, listTemplates, searchEntities, catalogStats];
+  return [
+    listEntities,
+    getEntity,
+    listTemplates,
+    getTemplateDetails,
+    createScaffolderTask,
+    getScaffolderTask,
+    searchEntities,
+    catalogStats,
+  ];
 }
