@@ -130,11 +130,15 @@ spec:
           # package.json
           - file: "./package.json"
             find: "BACKSTAGE_ENTITY_NAME"
-            replaceWith: ${{ parameters.name | replace("-", "_") }}
+            replaceWith: ${{ parameters.name }}
+          # README.md
+          - file: "./README.md"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name }}
           # package-lock.json
           - file: "./package-lock.json"
             find: "BACKSTAGE_ENTITY_NAME"
-            replaceWith: ${{ parameters.name | replace("-", "_") }}
+            replaceWith: ${{ parameters.name }}
 
     - id: publish
       name: 🚀 Publish to GitHub
