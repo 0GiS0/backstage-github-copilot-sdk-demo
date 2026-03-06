@@ -17,112 +17,49 @@ function createId() {
   return `msg-${Date.now()}-${messageCounter}`;
 }
 
-const TOOL_PROGRESS_COPY: Record<
-  string,
-  { start: string; success: string; error: string }
-> = {
-  backstage_list_templates: {
-    start: '📋 Listando plantillas...',
-    success: '📋 Plantillas listadas',
-    error: '❌ Error al listar plantillas',
-  },
-  backstage_get_template_details: {
-    start: '🧩 Revisando parámetros de la plantilla...',
-    success: '🧩 Parámetros revisados',
-    error: '❌ Error al leer la plantilla',
-  },
-  backstage_list_entities: {
-    start: '🗂️ Consultando el catálogo...',
-    success: '🗂️ Catálogo consultado',
-    error: '❌ Error al consultar el catálogo',
-  },
-  backstage_get_entity: {
-    start: '📄 Leyendo entidad del catálogo...',
-    success: '📄 Entidad leída',
-    error: '❌ Error al leer la entidad',
-  },
-  github_check_repo_availability: {
-    start: '🧪 Comprobando si el repo ya existe en GitHub...',
-    success: '🧪 El nombre del repo está disponible',
-    error: '❌ El nombre del repo no está disponible',
-  },
-  backstage_create_scaffolder_task: {
-    start: '🚀 Lanzando la creación en Backstage...',
-    success: '🚀 Tarea de creación lanzada',
-    error: '❌ Error al lanzar la creación',
-  },
-  backstage_get_scaffolder_task: {
-    start: '⏳ Comprobando el estado de la creación...',
-    success: '⏳ Estado de la creación actualizado',
-    error: '❌ Error al revisar el estado',
-  },
-  backstage_search: {
-    start: '🔎 Buscando en Backstage...',
-    success: '🔎 Búsqueda completada',
-    error: '❌ Error en la búsqueda',
-  },
-};
-
 function getProgressCopy(event: ChatProgressEvent): {
   key: string;
   label: string;
   status: ChatProgressStep['status'];
 } | null {
-  if (event.action === 'agent_start') {
+  if (event.key && event.label && event.status) {
     return {
-      key: `agent:${event.agent || 'agent'}`,
-      label: `🤖 ${event.agent || 'Agente'} trabajando...`,
-      status: 'running',
+      key: event.key,
+      label: event.label,
+      status: event.status,
     };
   }
 
-  if (event.action === 'agent_end') {
+  if (event.tool) {
     return {
-      key: `agent:${event.agent || 'agent'}`,
-      label: `🤖 ${event.agent || 'Agente'} completado`,
-      status: 'completed',
+      key: `tool:${event.tool}`,
+      label: event.tool,
+      status:
+        event.action === 'tool_start'
+          ? 'running'
+          : event.success === false
+          ? 'failed'
+          : 'completed',
     };
   }
 
-  if (!event.tool) {
-    return null;
+  if (event.agent) {
+    return {
+      key: `agent:${event.agent}`,
+      label: event.agent,
+      status: event.action === 'agent_start' ? 'running' : 'completed',
+    };
   }
 
-  const toolName = event.tool;
-  const copy = TOOL_PROGRESS_COPY[toolName] || {
-    start: `🔧 Ejecutando ${toolName}...`,
-    success: `🔧 ${toolName} completado`,
-    error: `❌ ${toolName} falló`,
-  };
-
-  const isStart = event.action === 'tool_start';
-  const isError = event.success === false;
-
-  return {
-    key: `tool:${toolName}`,
-    label: isStart ? copy.start : isError ? copy.error : copy.success,
-    status: isStart ? 'running' : isError ? 'failed' : 'completed',
-  };
+  return null;
 }
 
 function getProgressLabel(event: ChatProgressEvent): string | null {
-  const progressCopy = getProgressCopy(event);
-  if (!progressCopy) {
+  if (event.action === 'tool_end' && event.success !== false) {
     return null;
   }
 
-  switch (event.action) {
-    case 'tool_start':
-      return progressCopy.label;
-    case 'tool_end':
-      return event.success === false ? progressCopy.label : null;
-    case 'agent_start':
-      return progressCopy.label;
-    case 'agent_end':
-      return null;
-    default:
-      return null;
-  }
+  return getProgressCopy(event)?.label || null;
 }
 
 export function useCopilotChat() {
@@ -143,49 +80,63 @@ export function useCopilotChat() {
     githubAuthApi
       .getProfile({ optional: true })
       .then(profile => {
-        if (profile?.picture) setUserAvatarUrl(profile.picture);
+        if (profile?.picture) {
+          setUserAvatarUrl(profile.picture);
+        }
       })
       .catch(() => {});
   }, [githubAuthApi]);
 
-  // Fetch available models on mount
   useEffect(() => {
     let cancelled = false;
+
     async function loadModels() {
       setModelsLoading(true);
+
       try {
         const githubToken = await githubAuthApi.getAccessToken(['read:user']);
         const baseUrl = await discoveryApi.getBaseUrl('copilot-chat');
         const response = await fetch(`${baseUrl}/models`, {
           headers: { 'X-GitHub-Token': githubToken },
         });
-        if (response.ok) {
-          const data: CopilotModel[] = await response.json();
-          if (!cancelled) {
-            setModels(data);
-            const defaultModel =
-              data.find(m => m.id === DEFAULT_MODEL_ID) ||
-              data.find(m => /claude.*opus.*4\.5/i.test(m.name));
-            if (defaultModel) {
-              setSelectedModel(defaultModel.id);
-            } else if (data.length > 0) {
-              setSelectedModel(data[0].id);
-            }
-          }
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data: CopilotModel[] = await response.json();
+
+        if (cancelled) {
+          return;
+        }
+
+        setModels(data);
+
+        const defaultModel =
+          data.find(model => model.id === DEFAULT_MODEL_ID) ||
+          data.find(model => /claude.*opus.*4\.5/i.test(model.name));
+
+        if (defaultModel) {
+          setSelectedModel(defaultModel.id);
+        } else if (data.length > 0) {
+          setSelectedModel(data[0].id);
         }
       } catch {
-        // models will remain empty — selector won't show
+        // models remain empty and the selector stays hidden
       } finally {
-        if (!cancelled) setModelsLoading(false);
+        if (!cancelled) {
+          setModelsLoading(false);
+        }
       }
     }
+
     loadModels();
+
     return () => {
       cancelled = true;
     };
   }, [githubAuthApi, discoveryApi]);
 
-  // When model changes, reset session so next message uses the new model
   const changeModel = useCallback((modelId: string) => {
     setSelectedModel(modelId);
     sessionIdRef.current = null;
@@ -196,19 +147,18 @@ export function useCopilotChat() {
       let hasReceivedDelta = false;
       let showingSyntheticProgress = false;
 
-      // Add user message immediately
       const userMsg: ChatMessage = {
         id: createId(),
         role: 'user',
         content: text,
         timestamp: new Date(),
       };
+
       setMessages(prev => [...prev, userMsg]);
       setIsLoading(true);
       setToolAction(null);
       setProgressSteps([]);
 
-      // Prepare a placeholder assistant message that we'll stream into
       const assistantId = createId();
       setMessages(prev => [
         ...prev,
@@ -221,13 +171,9 @@ export function useCopilotChat() {
       ]);
 
       try {
-        // Get the user's real GitHub OAuth token
         const githubToken = await githubAuthApi.getAccessToken(['read:user']);
-
-        // Discover the backend plugin base URL
         const baseUrl = await discoveryApi.getBaseUrl('copilot-chat');
 
-        // Call the backend chat endpoint via SSE
         const response = await fetch(`${baseUrl}/chat`, {
           method: 'POST',
           headers: {
@@ -247,12 +193,14 @@ export function useCopilotChat() {
         }
 
         const reader = response.body?.getReader();
-        if (!reader) throw new Error('No response body');
+        if (!reader) {
+          throw new Error('No response body');
+        }
 
         const decoder = new TextDecoder();
         let buffer = '';
-
         let streamOpen = true;
+
         while (streamOpen) {
           const { done, value } = await reader.read();
           if (done) {
@@ -261,15 +209,18 @@ export function useCopilotChat() {
           }
 
           buffer += decoder.decode(value, { stream: true });
-
-          // Process complete SSE lines
           const lines = buffer.split('\n');
           buffer = lines.pop() || '';
 
           for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
+            if (!line.startsWith('data: ')) {
+              continue;
+            }
+
             const jsonStr = line.slice(6).trim();
-            if (!jsonStr) continue;
+            if (!jsonStr) {
+              continue;
+            }
 
             try {
               const event = JSON.parse(jsonStr);
@@ -280,7 +231,7 @@ export function useCopilotChat() {
                 hasReceivedDelta = true;
                 setToolAction(null);
                 const replaceSyntheticProgress = showingSyntheticProgress;
-                // Append delta to the assistant message
+
                 setMessages(prev =>
                   prev.map(msg =>
                     msg.id === assistantId
@@ -293,14 +244,17 @@ export function useCopilotChat() {
                       : msg,
                   ),
                 );
+
                 showingSyntheticProgress = false;
               } else if (event.type === 'progress') {
                 const progressEvent = event as ChatProgressEvent;
                 const label = getProgressLabel(progressEvent);
                 const progressCopy = getProgressCopy(progressEvent);
+
                 if (!progressCopy) {
                   continue;
                 }
+
                 setToolAction(label);
                 setProgressSteps(prev => {
                   const existingIndex = prev.findIndex(
@@ -329,6 +283,7 @@ export function useCopilotChat() {
                       : step,
                   );
                 });
+
                 if (label && !hasReceivedDelta) {
                   showingSyntheticProgress = true;
                   setMessages(prev =>
@@ -356,9 +311,11 @@ export function useCopilotChat() {
                       : msg,
                   ),
                 );
+
                 if (event.resetSession) {
                   sessionIdRef.current = null;
                 }
+
                 setToolAction(null);
                 setProgressSteps([]);
               }
@@ -368,7 +325,6 @@ export function useCopilotChat() {
           }
         }
       } catch (err: any) {
-        // Update the assistant placeholder with the error
         setMessages(prev =>
           prev.map(msg =>
             msg.id === assistantId

@@ -321,7 +321,13 @@ export async function createRouter({
           }
 
           logger.info(`[chat] Tool started: ${toolName}`);
-          writeProgress(res, { action: 'tool_start', tool: toolName });
+          writeProgress(res, {
+            action: 'tool_start',
+            tool: toolName,
+            key: `tool:${toolName}`,
+            label: toolName,
+            status: 'running',
+          });
         },
       );
 
@@ -353,6 +359,9 @@ export async function createRouter({
             action: 'tool_end',
             tool: toolName,
             success,
+            key: `tool:${toolName}`,
+            label: toolName,
+            status: success ? 'completed' : 'failed',
           });
         },
       );
@@ -362,7 +371,13 @@ export async function createRouter({
         const agentName =
           event.data?.agentDisplayName || event.data?.agentName || 'agent';
         logger.info(`[chat] Subagent started: ${agentName}`);
-        writeProgress(res, { action: 'agent_start', agent: agentName });
+        writeProgress(res, {
+          action: 'agent_start',
+          agent: agentName,
+          key: `agent:${agentName}`,
+          label: agentName,
+          status: 'running',
+        });
       });
 
       unsubscribeAgentComplete = session.on(
@@ -372,7 +387,13 @@ export async function createRouter({
           const agentName =
             event.data?.agentDisplayName || event.data?.agentName || 'agent';
           logger.info(`[chat] Subagent completed: ${agentName}`);
-          writeProgress(res, { action: 'agent_end', agent: agentName });
+          writeProgress(res, {
+            action: 'agent_end',
+            agent: agentName,
+            key: `agent:${agentName}`,
+            label: agentName,
+            status: 'completed',
+          });
         },
       );
 

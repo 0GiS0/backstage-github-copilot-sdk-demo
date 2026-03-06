@@ -11,6 +11,9 @@ export interface ChatProgressEvent {
   tool?: string;
   agent?: string;
   success?: boolean;
+  key?: string;
+  label?: string;
+  status?: ChatProgressStep['status'];
 }
 
 export interface ChatProgressStep {

@@ -4,18 +4,19 @@ import request from 'supertest';
 
 jest.mock('@github/copilot-sdk');
 
-import {
+const {
   __getLastCreateSessionOptions,
   __resetMockSessionFactory,
   __setMockSessionFactory,
   approveAll,
-} from '@github/copilot-sdk';
+} = require('@github/copilot-sdk');
 
 jest.mock('./tools', () => ({
   createBackstageTools: jest.fn(async () => []),
 }));
 
 import { createRouter } from './router';
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -134,6 +135,8 @@ describe('createRouter', () => {
     expect(response.text).toContain(
       '"type":"progress","action":"tool_start","tool":"backstage_create_scaffolder_task"',
     );
+    expect(response.text).toContain('"label":"backstage_create_scaffolder_task"');
+    expect(response.text).toContain('"status":"running"');
     expect(response.text).toContain(
       '"type":"progress","action":"tool_end","tool":"backstage_create_scaffolder_task","success":true',
     );
