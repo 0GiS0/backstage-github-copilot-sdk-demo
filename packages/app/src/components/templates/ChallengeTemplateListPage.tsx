@@ -194,8 +194,8 @@ export const ChallengeTemplateListPage = (props: TemplateListPageProps) => {
                       Register Existing Component
                     </Button>
                     <SupportButton>
-                      Browse local templates, filter them by category and
-                      owner, or jump straight into the creation flow.
+                      Browse local templates, filter them by category and owner,
+                      or jump straight into the creation flow.
                     </SupportButton>
                   </ContentHeader>
                 </div>
