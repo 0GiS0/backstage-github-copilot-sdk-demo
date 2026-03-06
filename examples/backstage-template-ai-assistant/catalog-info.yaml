@@ -39,11 +39,11 @@ spec:
           minLength: 1
           maxLength: 340
           pattern: "^.*\\S.*$"
-          ui:help: "Required field. Max 340 characters (GitHub has a 350-byte limit, accented characters count as multiple bytes). Excess whitespace will be normalized automatically."
+          ui:help: 'Required field. Max 340 characters (GitHub has a 350-byte limit, accented characters count as multiple bytes). Excess whitespace will be normalized automatically.'
           ui:options:
             inputProps:
               maxLength: 340
-              placeholder: "Enter a clear, concise description of this AI Assistant service..."
+              placeholder: 'Enter a clear, concise description of this AI Assistant service...'
           ui:widget: textarea
         owner:
           title: 👥 Component Owner Group
@@ -69,10 +69,10 @@ spec:
             - tier-3
             - experimental
           enumNames:
-            - "🔴 Tier 1 (Critical)"
-            - "🟡 Tier 2 (Important)"
-            - "🟢 Tier 3 (Standard)"
-            - "🧪 Experimental"
+            - '🔴 Tier 1 (Critical)'
+            - '🟡 Tier 2 (Important)'
+            - '🟢 Tier 3 (Standard)'
+            - '🧪 Experimental'
         teamOwner:
           title: 👨‍💼 Team Owner
           type: string
@@ -83,13 +83,13 @@ spec:
           title: 🎪 Demo Repository
           type: string
           description: Mark this repository as a demonstration/test repository
-          default: "yes"
+          default: 'yes'
           enum:
-            - "yes"
-            - "no"
+            - 'yes'
+            - 'no'
           enumNames:
-            - "🎪 Yes - Demo/Test"
-            - "🏭 No - Production"
+            - '🎪 Yes - Demo/Test'
+            - '🏭 No - Production'
     - title: 🎯 Repository Location
       required:
         - repoUrl
@@ -128,13 +128,7 @@ spec:
       input:
         repoUrl: ${{ parameters.repoUrl }}
         description: ${{ parameters.description }}
-        topics:
-          [
-            "backstage-include",
-            "0GiS0",
-            "python",
-            "fastapi",
-          ]
+        topics: ['backstage-include', '0GiS0', 'python', 'fastapi']
         defaultBranch: main
         gitCommitMessage: Create AI Assistant service from template
         customProperties:

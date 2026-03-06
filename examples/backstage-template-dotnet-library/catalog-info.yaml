@@ -38,11 +38,11 @@ spec:
           minLength: 1
           maxLength: 340
           pattern: "^.*\\S.*$"
-          ui:help: "Required field. Max 340 characters."
+          ui:help: 'Required field. Max 340 characters.'
           ui:options:
             inputProps:
               maxLength: 340
-              placeholder: "Enter a clear, concise description of this .NET library..."
+              placeholder: 'Enter a clear, concise description of this .NET library...'
           ui:widget: textarea
         owner:
           title: 👥 Select in which group the component will be created
@@ -72,13 +72,13 @@ spec:
           title: 🎪 Demo Repository
           type: string
           description: Mark this repository as a demonstration/test repository
-          default: "yes"
+          default: 'yes'
           enum:
-            - "yes"
-            - "no"
+            - 'yes'
+            - 'no'
           enumNames:
-            - "🎪 Yes - Demo/Test"
-            - "🏭 No - Production"
+            - '🎪 Yes - Demo/Test'
+            - '🏭 No - Production'
     - title: 🎯 Choose a destination
       required:
         - repoUrl
@@ -117,59 +117,59 @@ spec:
       input:
         files:
           # Solution file
-          - file: "./BACKSTAGE_ENTITY_NAME.sln"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './BACKSTAGE_ENTITY_NAME.sln'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
           # Main project file
-          - file: "./src/BACKSTAGE_ENTITY_NAME.csproj"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './src/BACKSTAGE_ENTITY_NAME.csproj'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
-          - file: "./src/BACKSTAGE_ENTITY_NAME.csproj"
-            find: "BACKSTAGE_ORG_NAME"
+          - file: './src/BACKSTAGE_ENTITY_NAME.csproj'
+            find: 'BACKSTAGE_ORG_NAME'
             replaceWith: ${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}
-          - file: "./src/BACKSTAGE_ENTITY_NAME.csproj"
-            find: "BACKSTAGE_DESCRIPTION"
+          - file: './src/BACKSTAGE_ENTITY_NAME.csproj'
+            find: 'BACKSTAGE_DESCRIPTION'
             replaceWith: ${{ parameters.description }}
           # Test project file
-          - file: "./tests/BACKSTAGE_ENTITY_NAME.Tests.csproj"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './tests/BACKSTAGE_ENTITY_NAME.Tests.csproj'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
           # Source files
-          - file: "./src/**/*.cs"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './src/**/*.cs'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
           # Test files
-          - file: "./tests/**/*.cs"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './tests/**/*.cs'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
           # README
-          - file: "./README.md"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './README.md'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
-          - file: "./README.md"
-            find: "BACKSTAGE_DESCRIPTION"
+          - file: './README.md'
+            find: 'BACKSTAGE_DESCRIPTION'
             replaceWith: ${{ parameters.description }}
-          - file: "./README.md"
-            find: "BACKSTAGE_ORG_NAME"
+          - file: './README.md'
+            find: 'BACKSTAGE_ORG_NAME'
             replaceWith: ${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}
           # mkdocs.yml
-          - file: "./mkdocs.yml"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './mkdocs.yml'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
           # devcontainer.json
-          - file: "./.devcontainer/devcontainer.json"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './.devcontainer/devcontainer.json'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
           # docs/index.md
-          - file: "./docs/index.md"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './docs/index.md'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
           # publish workflow
-          - file: "./.github/workflows/publish.yml"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './.github/workflows/publish.yml'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
-          - file: "./.github/workflows/publish.yml"
-            find: "BACKSTAGE_ORG_NAME"
+          - file: './.github/workflows/publish.yml'
+            find: 'BACKSTAGE_ORG_NAME'
             replaceWith: ${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}
 
     - id: rename-solution

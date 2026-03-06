@@ -90,12 +90,12 @@ spec:
       input:
         files:
           # package.json
-          - file: "./package.json"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './package.json'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
           # package-lock.json
-          - file: "./package-lock.json"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './package-lock.json'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
 
     - id: publish

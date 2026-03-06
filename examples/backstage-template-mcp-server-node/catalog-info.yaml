@@ -38,11 +38,11 @@ spec:
           minLength: 1
           maxLength: 340
           pattern: "^.*\\S.*$"
-          ui:help: "Required field. Max 340 characters (GitHub has a 350-byte limit, accented characters count as multiple bytes). Excess whitespace will be normalized automatically."
+          ui:help: 'Required field. Max 340 characters (GitHub has a 350-byte limit, accented characters count as multiple bytes). Excess whitespace will be normalized automatically.'
           ui:options:
             inputProps:
               maxLength: 340
-              placeholder: "Enter a clear, concise description of this Node.js service..."
+              placeholder: 'Enter a clear, concise description of this Node.js service...'
           ui:widget: textarea
         owner:
           title: 👥 Select in which group the component will be created
@@ -68,10 +68,10 @@ spec:
             - tier-3
             - experimental
           enumNames:
-            - "🔴 Tier 1 (Critical)"
-            - "🟡 Tier 2 (Important)"
-            - "🟢 Tier 3 (Standard)"
-            - "🧪 Experimental"
+            - '🔴 Tier 1 (Critical)'
+            - '🟡 Tier 2 (Important)'
+            - '🟢 Tier 3 (Standard)'
+            - '🧪 Experimental'
         teamOwner:
           title: 👨‍💼 Team Owner
           type: string
@@ -82,13 +82,13 @@ spec:
           title: 🎪 Demo Repository
           type: string
           description: Mark this repository as a demonstration/test repository
-          default: "yes"
+          default: 'yes'
           enum:
-            - "yes"
-            - "no"
+            - 'yes'
+            - 'no'
           enumNames:
-            - "🎪 Yes - Demo/Test"
-            - "🏭 No - Production"
+            - '🎪 Yes - Demo/Test'
+            - '🏭 No - Production'
     - title: 🎯 Choose a destination
       required:
         - repoUrl
@@ -126,36 +126,36 @@ spec:
       input:
         files:
           # package.json
-          - file: "./package.json"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './package.json'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", "_") }}
-          - file: "./package.json"
-            find: "BACKSTAGE_ENTITY_DESCRIPTION"
+          - file: './package.json'
+            find: 'BACKSTAGE_ENTITY_DESCRIPTION'
             replaceWith: ${{ parameters.description }}
-          - file: "./package.json"
-            find: "BACKSTAGE_AUTHOR"
+          - file: './package.json'
+            find: 'BACKSTAGE_AUTHOR'
             replaceWith: ${{ parameters.owner }}
-          - file: "./package.json"
-            find: "BACKSTAGE_REPO_URL"
+          - file: './package.json'
+            find: 'BACKSTAGE_REPO_URL'
             replaceWith: ${{ parameters.repoUrl }}
           # package-lock.json
-          - file: "./package-lock.json"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './package-lock.json'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", "_") }}
           # index.js
-          - file: "./src/index.js"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './src/index.js'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
           # mkdocs.yml
-          - file: "./mkdocs.yml"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './mkdocs.yml'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
-          - file: "./mkdocs.yml"
-            find: "BACKSTAGE_REPO_URL"
+          - file: './mkdocs.yml'
+            find: 'BACKSTAGE_REPO_URL'
             replaceWith: ${{ parameters.repoUrl }}
           # tests
-          - file: "./tests/**/*.js"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './tests/**/*.js'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
 
     - id: publish
@@ -164,13 +164,7 @@ spec:
       input:
         repoUrl: ${{ parameters.repoUrl }}
         description: ${{ parameters.description }}
-        topics:
-          [
-            "backstage-include",
-            "0GiS0",
-            "nodejs",
-            "typescript",
-          ]
+        topics: ['backstage-include', '0GiS0', 'nodejs', 'typescript']
         defaultBranch: main
         gitCommitMessage: Create Node.js service from template
         customProperties:

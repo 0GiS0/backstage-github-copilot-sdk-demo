@@ -164,4 +164,4 @@ spec:
       name: Register
       action: catalog:register
       input:
-          catalogInfoUrl: "https://github.com/${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}/blob/main/catalog-info.yaml"
+        catalogInfoUrl: "https://github.com/${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}/blob/main/catalog-info.yaml"

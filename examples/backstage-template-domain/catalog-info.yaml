@@ -36,11 +36,11 @@ spec:
           minLength: 1
           maxLength: 340
           pattern: "^.*\\S.*$"
-          ui:help: "Required field. Max 340 characters. Describe the business area or functional scope of this domain."
+          ui:help: 'Required field. Max 340 characters. Describe the business area or functional scope of this domain.'
           ui:options:
             inputProps:
               maxLength: 340
-              placeholder: "Enter a clear, concise description of this domain..."
+              placeholder: 'Enter a clear, concise description of this domain...'
           ui:widget: textarea
         owner:
           title: 👥 Select the team that owns this domain
@@ -80,14 +80,13 @@ spec:
       input:
         repoUrl: ${{ parameters.repoUrl }}
         description: ${{ parameters.description }}
-        topics:
-          ["backstage-include", "0GiS0", "domain", "catalog"]
+        topics: ['backstage-include', '0GiS0', 'domain', 'catalog']
         defaultBranch: main
         gitCommitMessage: Create Domain entity from template
         customProperties:
-          service-tier: "tier-2"
+          service-tier: 'tier-2'
           team-owner: ${{ parameters.owner }}
-          demo: "no"
+          demo: 'no'
 
     - id: register
       name: 📋 Register

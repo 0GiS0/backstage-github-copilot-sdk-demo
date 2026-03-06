@@ -46,11 +46,11 @@ spec:
           minLength: 1
           maxLength: 340
           pattern: "^.*\\S.*$"
-          ui:help: "Required field. Max 340 characters (GitHub has a 350-byte limit, accented characters count as multiple bytes). Excess whitespace will be normalized automatically."
+          ui:help: 'Required field. Max 340 characters (GitHub has a 350-byte limit, accented characters count as multiple bytes). Excess whitespace will be normalized automatically.'
           ui:options:
             inputProps:
               maxLength: 340
-              placeholder: "Enter a clear, concise description of this Spring Boot service..."
+              placeholder: 'Enter a clear, concise description of this Spring Boot service...'
           ui:widget: textarea
         owner:
           title: 👥 Select in which group the component will be created
@@ -76,10 +76,10 @@ spec:
             - tier-3
             - experimental
           enumNames:
-            - "🔴 Tier 1 (Critical)"
-            - "🟡 Tier 2 (Important)"
-            - "🟢 Tier 3 (Standard)"
-            - "🧪 Experimental"
+            - '🔴 Tier 1 (Critical)'
+            - '🟡 Tier 2 (Important)'
+            - '🟢 Tier 3 (Standard)'
+            - '🧪 Experimental'
         teamOwner:
           title: 👨‍💼 Team Owner
           type: string
@@ -90,35 +90,35 @@ spec:
           title: ☕ Java Version
           type: string
           description: Java version for the project
-          default: "21"
+          default: '21'
           enum:
-            - "17"
-            - "21"
+            - '17'
+            - '21'
           enumNames:
-            - "Java 17 (LTS)"
-            - "Java 21 (LTS - Recommended)"
+            - 'Java 17 (LTS)'
+            - 'Java 21 (LTS - Recommended)'
         springBootVersion:
           title: 🍃 Spring Boot Version
           type: string
           description: Spring Boot version
-          default: "3.4.0"
+          default: '3.4.0'
           enum:
-            - "3.3.6"
-            - "3.4.0"
+            - '3.3.6'
+            - '3.4.0'
           enumNames:
-            - "3.3.6 (Stable)"
-            - "3.4.0 (Latest)"
+            - '3.3.6 (Stable)'
+            - '3.4.0 (Latest)'
         demo:
           title: 🎪 Demo Repository
           type: string
           description: Mark this repository as a demonstration/test repository
-          default: "yes"
+          default: 'yes'
           enum:
-            - "yes"
-            - "no"
+            - 'yes'
+            - 'no'
           enumNames:
-            - "🎪 Yes - Demo/Test"
-            - "🏭 No - Production"
+            - '🎪 Yes - Demo/Test'
+            - '🏭 No - Production'
     - title: 🎯 Choose a destination
       required:
         - repoUrl
@@ -159,44 +159,44 @@ spec:
       input:
         files:
           # README.md
-          - file: "./README.md"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './README.md'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
-          - file: "./README.md"
-            find: "BACKSTAGE_ENTITY_DESCRIPTION"
+          - file: './README.md'
+            find: 'BACKSTAGE_ENTITY_DESCRIPTION'
             replaceWith: ${{ parameters.description }}
           # pom.xml
-          - file: "./pom.xml"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './pom.xml'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
-          - file: "./pom.xml"
-            find: "BACKSTAGE_ENTITY_DESCRIPTION"
+          - file: './pom.xml'
+            find: 'BACKSTAGE_ENTITY_DESCRIPTION'
             replaceWith: ${{ parameters.description }}
-          - file: "./pom.xml"
-            find: "BACKSTAGE_JAVA_VERSION"
+          - file: './pom.xml'
+            find: 'BACKSTAGE_JAVA_VERSION'
             replaceWith: ${{ parameters.javaVersion }}
-          - file: "./pom.xml"
-            find: "BACKSTAGE_SPRING_VERSION"
+          - file: './pom.xml'
+            find: 'BACKSTAGE_SPRING_VERSION'
             replaceWith: ${{ parameters.springBootVersion }}
           # Application.java
-          - file: "./src/main/java/com/example/demo/Application.java"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './src/main/java/com/example/demo/Application.java'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name | replace("-", "") | capitalize }}
           # application.yml
-          - file: "./src/main/resources/application.yml"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './src/main/resources/application.yml'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
           # devcontainer.json
-          - file: "./.devcontainer/devcontainer.json"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './.devcontainer/devcontainer.json'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
           # api.http
-          - file: "./api.http"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './api.http'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
           # Dockerfile
-          - file: "./Dockerfile"
-            find: "BACKSTAGE_ENTITY_NAME"
+          - file: './Dockerfile'
+            find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
 
     - id: publish
@@ -206,13 +206,7 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         description: ${{ parameters.description }}
         topics:
-          [
-            "backstage-include",
-            "0GiS0",
-            "java",
-            "spring-boot",
-            "microservice",
-          ]
+          ['backstage-include', '0GiS0', 'java', 'spring-boot', 'microservice']
         defaultBranch: main
         gitCommitMessage: Create Spring Boot service from template
         customProperties:
