@@ -135,7 +135,9 @@ describe('createRouter', () => {
     expect(response.text).toContain(
       '"type":"progress","action":"tool_start","tool":"backstage_create_scaffolder_task"',
     );
-    expect(response.text).toContain('"label":"backstage_create_scaffolder_task"');
+    expect(response.text).toContain(
+      '"label":"backstage_create_scaffolder_task"',
+    );
     expect(response.text).toContain('"status":"running"');
     expect(response.text).toContain(
       '"type":"progress","action":"tool_end","tool":"backstage_create_scaffolder_task","success":true',
