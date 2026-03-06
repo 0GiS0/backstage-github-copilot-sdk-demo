@@ -30,7 +30,6 @@ export function __getLastResumeSessionOptions() {
 }
 
 export class CopilotClient {
-  constructor(_opts: any) {}
   async start() {}
   async stop() {}
   async listModels() {

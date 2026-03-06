@@ -31,15 +31,17 @@ function getProgressCopy(event: ChatProgressEvent): {
   }
 
   if (event.tool) {
+    let status: ChatProgressStep['status'] = 'completed';
+    if (event.action === 'tool_start') {
+      status = 'running';
+    } else if (event.success === false) {
+      status = 'failed';
+    }
+
     return {
       key: `tool:${event.tool}`,
       label: event.tool,
-      status:
-        event.action === 'tool_start'
-          ? 'running'
-          : event.success === false
-          ? 'failed'
-          : 'completed',
+      status,
     };
   }
 

@@ -76,21 +76,24 @@ export const ProgressPanel = ({ steps }: ProgressPanelProps) => {
     <div className={classes.panel}>
       <div className={classes.title}>Activity</div>
       <div className={classes.list}>
-        {steps.map(step => (
-          <div
-            key={step.id}
-            className={`${classes.step} ${
-              step.status === 'running'
-                ? classes.stepRunning
-                : step.status === 'failed'
-                ? classes.stepFailed
-                : classes.stepCompleted
-            }`}
-          >
-            <span className={classes.icon}>{getStatusIcon(step.status)}</span>
-            <span>{step.label}</span>
-          </div>
-        ))}
+        {steps.map(step => {
+          let statusClass = classes.stepCompleted;
+          if (step.status === 'running') {
+            statusClass = classes.stepRunning;
+          } else if (step.status === 'failed') {
+            statusClass = classes.stepFailed;
+          }
+
+          return (
+            <div
+              key={step.id}
+              className={`${classes.step} ${statusClass}`}
+            >
+              <span className={classes.icon}>{getStatusIcon(step.status)}</span>
+              <span>{step.label}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

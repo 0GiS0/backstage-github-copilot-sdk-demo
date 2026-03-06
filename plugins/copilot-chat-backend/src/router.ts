@@ -22,12 +22,14 @@ async function getCopilotSdk(): Promise<any> {
 
 const DEFAULT_MODEL = 'claude-opus-4.5';
 
+const BACKSTAGE_MCP_ACTIONS_TOKEN = process.env.BACKSTAGE_MCP_ACTIONS_TOKEN;
+
 const BACKSTAGE_MCP_SERVER = {
   type: 'http' as const,
   url: 'http://localhost:7007/api/mcp-actions/v1',
-  headers: {
-    Authorization: 'Bearer mcp-test-token-local-dev',
-  },
+  headers: BACKSTAGE_MCP_ACTIONS_TOKEN
+    ? { Authorization: `Bearer ${BACKSTAGE_MCP_ACTIONS_TOKEN}` }
+    : {},
   tools: ['*'],
 };
 

@@ -15,7 +15,7 @@ import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import StarsIcon from '@material-ui/icons/Stars';
 import { Page } from '@backstage/core-components';
 import { Link as RouterLink } from 'react-router-dom';
-import copilotAvatar from '../../../../../plugins/copilot-chat/src/assets/github-copilot-logo.png';
+import copilotAvatar from '../../assets/github-copilot-logo.png';
 
 const useStyles = makeStyles(theme => ({
   content: {

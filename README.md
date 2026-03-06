@@ -4,179 +4,125 @@
 
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC140iBrEZbOtvxWsJ-Tb0lQ?style=for-the-badge&logo=youtube&logoColor=white&color=red)](https://www.youtube.com/c/GiselaTorres?sub_confirmation=1)
 [![GitHub followers](https://img.shields.io/github/followers/0GiS0?style=for-the-badge&logo=github&logoColor=white)](https://github.com/0GiS0)
-[![LinkedIn Follow](https://img.shields.io/badge/LinkedIn-Sígueme-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/giselatorresbuitrago/)
-[![X Follow](https://img.shields.io/badge/X-Sígueme-black?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/0GiS0)
+[![LinkedIn Follow](https://img.shields.io/badge/LinkedIn-Follow-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/giselatorresbuitrago/)
+[![X Follow](https://img.shields.io/badge/X-Follow-black?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/0GiS0)
 
 </div>
 
 ---
 
-¡Hola developer 👋🏻! Este proyecto es una demo de integración de **GitHub Copilot SDK** con **Backstage** para crear un asistente de chat inteligente que interactúa con el catálogo de componentes de tu portal de desarrolladores.
+This repository demonstrates how to embed the **GitHub Copilot SDK** into a **Backstage** developer portal to deliver a catalog-aware, self-service assistant inside the portal.
 
-<a href="https://youtu.be/VIDEO_CODE">
- <img src="https://img.youtube.com/vi/VIDEO_CODE/maxresdefault.jpg" alt="GitHub Copilot SDK + Backstage: Crea un Asistente de Código Inteligente" width="100%" />
-</a>
+> Video demo: add your final link here (or reference the challenge submission).
 
-## 📑 Tabla de Contenidos
+## 🏆 Challenge Submission (GitHub Copilot SDK Enterprise Challenge)
+- Docs (problem → solution, setup, RAI): [`/docs/README.md`](./docs/README.md)
+- Architecture diagram (Excalidraw source): [`/docs/architecture.excalidraw`](./docs/architecture.excalidraw)
+- Demo deck (1–2 slides): [`/presentations/CopilotSDKBackstageDemo.pptx`](./presentations/CopilotSDKBackstageDemo.pptx)
+- Agent instructions: [`AGENTS.md`](./AGENTS.md)
+- MCP configuration: [`mcp.json`](./mcp.json)
 
-- [Características](#-características)
-- [Tecnologías](#️-tecnologías-utilizadas)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación](#-instalación)
-- [Uso](#-uso)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Software Templates](#-software-templates)
-- [Contribuir](#-contribuir)
-- [Sígueme](#-sígueme-en-mis-redes-sociales)
+## Short project summary (≤150 words)
+This project demonstrates how the GitHub Copilot SDK can turn a Backstage developer portal into an AI-assisted, self-service platform experience. Inside Backstage, developers can chat with Copilot to discover catalog entities (systems, components, APIs), understand ownership and relationships, and get contextual help without leaving the portal. The solution pairs a Copilot Chat UI plugin with a backend plugin that hosts the agent, tools, and guardrails; the agent can retrieve Backstage context and use GitHub MCP capabilities to help with day‑to‑day engineering workflows. The business value is faster onboarding, fewer interruptions to platform teams, and a consistent “single pane of glass” for internal software knowledge and creation.
 
-## ✨ Características
+## What you get
+- **Copilot Chat inside Backstage** (UI plugin + backend plugin)
+- **Backstage context grounding** (catalog entities, ownership, relationships)
+- **MCP-powered actions** (via GitHub MCP server) with explicit tool boundaries
+- **Scaffolder templates** included under [`/examples`](./examples)
+- **GitHub OAuth sign-in** (reused to authenticate Copilot SDK sessions for a smooth UX)
 
-- 🤖 **Chat con Copilot integrado** — Asistente de IA dentro de Backstage usando el SDK oficial de GitHub Copilot
-- 📚 **Acceso al catálogo** — El asistente puede consultar y explicar los componentes registrados en Backstage
-- 🏗️ **Software Templates** — 13 plantillas listas para scaffoldear nuevos proyectos (Node.js, .NET, Python, Vue, Astro, etc.)
-- 🔐 **Autenticación GitHub** — Login con GitHub OAuth integrado
-- 🐳 **Dev Container incluido** — Entorno de desarrollo listo para usar
+## Prerequisites
+- Node.js **20 or 22** (see `.node-version`)
+- Yarn via Corepack (project uses Yarn `4.4.1`)
+- GitHub CLI (`gh`) authenticated
+- GitHub Copilot access
+- (Optional) Docker, if you plan to generate TechDocs locally
 
-## 🛠️ Tecnologías Utilizadas
-
-- [Backstage](https://backstage.io/) — Portal de desarrolladores de Spotify
-- [GitHub Copilot SDK](https://github.com/github/copilot-sdk) — SDK oficial para integrar Copilot
-- [Node.js 20+](https://nodejs.org/) — Runtime de JavaScript
-- [TypeScript](https://www.typescriptlang.org/) — Lenguaje de programación
-- [React](https://react.dev/) — Frontend UI
-- [Yarn](https://yarnpkg.com/) — Gestor de paquetes
-- [Docker](https://www.docker.com/) — Contenedores para TechDocs
-
-## 📋 Requisitos Previos
-
-- **Node.js** 20 o 22
-- **Yarn** (incluido con Node.js via corepack)
-- **Docker** (para generar TechDocs)
-- **GitHub CLI** (`gh`) autenticado
-- **Cuenta de GitHub** con acceso a Copilot
-
-## 🚀 Instalación
-
-### Paso 1: Clonar el repositorio
-
+## Quickstart (local dev)
 ```bash
 git clone https://github.com/0GiS0/backstage-github-copilot-sdk-demo.git
 cd backstage-github-copilot-sdk-demo
-```
 
-### Paso 2: Instalar dependencias
+corepack enable
+corepack prepare yarn@4.4.1 --activate
 
-```bash
 yarn install
+
+# GitHub token used by Backstage integrations + GitHub MCP tools
+export GITHUB_TOKEN=$(gh auth token)
+
+# Backstage internal MCP Actions auth (dev)
+# Used to call: http://localhost:7007/api/mcp-actions/v1
+export BACKSTAGE_MCP_ACTIONS_TOKEN=your_local_token
+
+# GitHub OAuth for Backstage sign-in (required)
+export GITHUB_APP_CLIENT_ID=your_client_id
+export GITHUB_APP_CLIENT_SECRET=your_client_secret
+
+yarn start
 ```
+- Frontend: http://localhost:3000
+- Backend: http://localhost:7007
 
-### Paso 3: Configurar variables de entorno
-
-Crea un archivo `.env` en la raíz del proyecto o configura las variables en tu terminal:
-
+## Configuration
+### 1) GitHub token (`GITHUB_TOKEN`)
+This token is used by `integrations.github` (and any GitHub MCP-backed actions). The easiest setup is:
 ```bash
-# Autenticación GitHub OAuth (para login de usuarios)
-export GITHUB_APP_CLIENT_ID=tu_client_id
-export GITHUB_APP_CLIENT_SECRET=tu_client_secret
+export GITHUB_TOKEN=$(gh auth token)
 ```
 
-> 💡 **Tip importante:** Para el token de integración con GitHub (`GITHUB_TOKEN`), **no necesitas crear un PAT manualmente**. Si tienes GitHub CLI autenticado, simplemente usa:
->
-> ```bash
-> export GITHUB_TOKEN=$(gh auth token)
-> ```
->
-> Esto extrae automáticamente el token de tu sesión de `gh` CLI, que ya tiene los permisos necesarios para acceder a repos privados.
+### 2) Backstage internal MCP Actions token (`BACKSTAGE_MCP_ACTIONS_TOKEN`)
+This token protects the local MCP Actions endpoint used by the backend:
+- `http://localhost:7007/api/mcp-actions/v1`
 
-### Paso 4: Ejecutar el proyecto
-
+Provide it via env var and ensure it matches `backend.auth.externalAccess` in `app-config.local.yaml`:
 ```bash
-export GITHUB_TOKEN=$(gh auth token) && yarn start
+export BACKSTAGE_MCP_ACTIONS_TOKEN=your_local_token
 ```
 
-El frontend estará disponible en [http://localhost:3000](http://localhost:3000) y el backend en [http://localhost:7007](http://localhost:7007).
-
-## 💻 Uso
-
-### Chat con Copilot
-
-Navega a [http://localhost:3000/copilot-chat](http://localhost:3000/copilot-chat) para interactuar con el asistente de Copilot integrado en Backstage.
-
-### Crear componentes desde Templates
-
-1. Ve a [http://localhost:3000/create](http://localhost:3000/create)
-2. Selecciona una de las 13 plantillas disponibles
-3. Completa el formulario con los parámetros requeridos
-4. El scaffolder creará el proyecto automáticamente
-
-## 📁 Estructura del Proyecto
-
-```
-backstage-github-copilot-sdk-demo/
-├── app-config.yaml          # Configuración principal de Backstage
-├── app-config.local.yaml    # Configuración local (secrets)
-├── packages/
-│   ├── app/                 # Frontend de Backstage
-│   │   └── src/
-│   │       ├── App.tsx
-│   │       └── components/
-│   └── backend/             # Backend de Backstage
-│       └── src/
-│           └── index.ts
-├── plugins/
-│   ├── copilot-chat/        # Plugin frontend del chat
-│   │   └── src/
-│   │       └── components/
-│   │           ├── CopilotChatPage/
-│   │           └── CopilotChatWidget/
-│   └── copilot-chat-backend/ # Plugin backend del chat
-│       └── src/
-│           ├── agents/      # Agentes de Copilot
-│           └── tools/       # Tools para el agente
-└── examples/                # Ejemplos de entidades
+### 3) GitHub OAuth (Backstage sign-in)
+Backstage auth provider is configured in [`app-config.yaml`](./app-config.yaml) under `auth.providers.github`. Provide the client ID/secret via env vars:
+```bash
+export GITHUB_APP_CLIENT_ID=your_client_id
+export GITHUB_APP_CLIENT_SECRET=your_client_secret
 ```
 
-## 🧩 Software Templates
+> Note: `app-config.local.yaml` is intentionally tracked but **must not contain real secrets**. It references env vars only.
 
-Este proyecto está configurado para cargar **13 software templates** desde repositorios privados con el topic `backstage-copilot-sdk`:
+## How to use the demo
+- Copilot Chat page: http://localhost:3000/copilot-chat
+- Scaffolder (templates): http://localhost:3000/create
 
-| Template                                  | Descripción                    |
-| ----------------------------------------- | ------------------------------ |
-| `backstage-template-system`               | Crear un System en el catálogo |
-| `backstage-template-domain`               | Crear un Domain en el catálogo |
-| `backstage-template-node-service`         | Servicio Node.js/Express       |
-| `backstage-template-fastapi-service`      | Servicio Python con FastAPI    |
-| `backstage-template-dotnet-service`       | Servicio .NET                  |
-| `backstage-template-dotnet-library`       | Librería .NET                  |
-| `backstage-template-ai-assistant`         | Asistente de IA                |
-| `backstage-template-mcp-server-node`      | Servidor MCP en Node.js        |
-| `backstage-template-astro-frontend`       | Frontend con Astro             |
-| `backstage-template-vue-frontend`         | Frontend con Vue.js            |
-| `backstage-template-electron-desktop-app` | App de escritorio Electron     |
-| `backstage-template-springboot-service`   | Servicio Java Spring Boot      |
-| `backstage-template-kubernetes-gitops`    | Configuración GitOps para K8s  |
+## Project structure (monorepo)
+This is a Backstage monorepo, so the equivalent of top-level `/app` or `/src` lives under:
+- Frontend app: `packages/app/src`
+- Backend app: `packages/backend/src`
+- Copilot Chat frontend plugin: `plugins/copilot-chat/src`
+- Copilot Chat backend plugin (agents/tools): `plugins/copilot-chat-backend/src`
 
-> ⚠️ **Nota:** Las templates se cargan desde repos privados. Asegúrate de tener `GITHUB_TOKEN` configurado correctamente.
+## Software templates
+This demo includes templates stored locally under [`/examples`](./examples) and loaded via `catalog.locations` in [`app-config.yaml`](./app-config.yaml).
 
-## 🤝 Contribuir
+## Responsible AI notes (high level)
+- Minimize data sent to the model; prefer IDs/metadata over full documents.
+- Treat external content as untrusted; resist prompt injection.
+- Never commit secrets; use env vars and least privilege.
 
-Las contribuciones son bienvenidas. Por favor:
+For the full write-up, see [`/docs/README.md`](./docs/README.md).
 
-1. Haz fork del repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit de tus cambios (`git commit -m 'Añade nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
+## Scripts
+- `yarn start` — run frontend + backend (dev)
+- `yarn lint:all` — lint
+- `yarn test` — tests
+- `yarn build:all` — build
 
-## 🌐 Sígueme en Mis Redes Sociales
-
-Si te ha gustado este proyecto y quieres ver más contenido como este, no olvides suscribirte a mi canal de YouTube y seguirme en mis redes sociales:
-
+## Follow
 <div align="center">
 
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC140iBrEZbOtvxWsJ-Tb0lQ?style=for-the-badge&logo=youtube&logoColor=white&color=red)](https://www.youtube.com/c/GiselaTorres?sub_confirmation=1)
 [![GitHub followers](https://img.shields.io/github/followers/0GiS0?style=for-the-badge&logo=github&logoColor=white)](https://github.com/0GiS0)
-[![LinkedIn Follow](https://img.shields.io/badge/LinkedIn-Sígueme-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/giselatorresbuitrago/)
-[![X Follow](https://img.shields.io/badge/X-Sígueme-black?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/0GiS0)
+[![LinkedIn Follow](https://img.shields.io/badge/LinkedIn-Follow-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/giselatorresbuitrago/)
+[![X Follow](https://img.shields.io/badge/X-Follow-black?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/0GiS0)
 
 </div>

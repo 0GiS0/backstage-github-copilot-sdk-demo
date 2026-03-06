@@ -323,6 +323,40 @@ export const CopilotChatWidget = () => {
     [isFullscreen, size],
   );
 
+  const handleResizeKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (isFullscreen) return;
+
+      const step = e.shiftKey ? 48 : 24;
+      let nextWidth = size.width;
+      let nextHeight = size.height;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          nextWidth = size.width + step;
+          break;
+        case 'ArrowRight':
+          nextWidth = size.width - step;
+          break;
+        case 'ArrowUp':
+          nextHeight = size.height + step;
+          break;
+        case 'ArrowDown':
+          nextHeight = size.height - step;
+          break;
+        default:
+          return;
+      }
+
+      e.preventDefault();
+      setSize({
+        width: Math.max(WIDGET_MIN_WIDTH, nextWidth),
+        height: Math.max(WIDGET_MIN_HEIGHT, nextHeight),
+      });
+    },
+    [isFullscreen, size],
+  );
+
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen(prev => !prev);
   }, []);
@@ -421,7 +455,11 @@ export const CopilotChatWidget = () => {
           {!isFullscreen && (
             <div
               className={classes.resizeHandle}
+              role="button"
+              tabIndex={0}
+              aria-label="Resize chat panel"
               onMouseDown={handleResizeStart}
+              onKeyDown={handleResizeKeyDown}
             />
           )}
 

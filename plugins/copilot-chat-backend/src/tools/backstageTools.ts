@@ -44,10 +44,12 @@ async function backstageRequest(
 ): Promise<any> {
   const url = `${BACKSTAGE_BASE_URL}${path}`;
   logger.info(`[tool] ${options.method ?? 'GET'} ${url}`);
+  const backstageToken = process.env.BACKSTAGE_MCP_ACTIONS_TOKEN;
+
   const response = await fetch(url, {
     method: options.method ?? 'GET',
     headers: {
-      Authorization: 'Bearer mcp-test-token-local-dev',
+      ...(backstageToken ? { Authorization: `Bearer ${backstageToken}` } : {}),
       ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     },
     ...(options.body ? { body: JSON.stringify(options.body) } : {}),
