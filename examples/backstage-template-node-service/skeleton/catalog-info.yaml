@@ -1,0 +1,55 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.name}}
+  description: |
+    ${{values.description}}
+  annotations:
+    github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - nodejs
+    - typescript
+    - express
+    - microservice
+spec:
+  type: service
+  lifecycle: production
+  owner: ${{values.teamOwner}}
+  system: ${{values.system}}
+  providesApis:
+    - ${{values.name}}-api
+  # dependsOn:
+  #   - resource:database
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ${{values.name}}-api
+  description: API for managing ${{values.name}}
+  annotations:
+    github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
+spec:
+  type: openapi
+  lifecycle: production
+  owner: ${{values.teamOwner}}
+  system: ${{values.system}}
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: ${{values.name}} API
+      version: 1.0.0
+      description: API for managing ${{values.name}}
+    paths:
+      /api/${{values.name}}:
+        get:
+          summary: List all ${{values.name}}
+          responses:
+            '200':
+              description: List of ${{values.name}}
+      /api/health:
+        get:
+          summary: Health check endpoint
+          responses:
+            '200':
+              description: Service is healthy

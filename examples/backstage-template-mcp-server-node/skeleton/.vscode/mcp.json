@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "BACKSTAGE_ENTITY_NAME": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["./dist/index.js"],
+      "envFile": "${workspaceFolder}/.env"
+    }
+  }
+}

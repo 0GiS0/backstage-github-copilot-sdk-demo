@@ -1,0 +1,83 @@
+# BACKSTAGE_ENTITY_NAME API
+
+### Variables
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Health Check
+GET {{baseUrl}}/actuator/health
+
+### Info Endpoint
+GET {{baseUrl}}/actuator/info
+
+### OpenAPI Documentation
+GET {{baseUrl}}/v3/api-docs
+
+### List All Items
+GET {{baseUrl}}/api/items
+
+### List Active Items Only
+GET {{baseUrl}}/api/items?activeOnly=true
+
+### Get Item by ID
+GET {{baseUrl}}/api/items/1
+
+### Search Items by Name
+GET {{baseUrl}}/api/items/search?name=Sample
+
+### Create New Item
+POST {{baseUrl}}/api/items
+Content-Type: {{contentType}}
+
+{
+    "name": "New Item",
+    "description": "This is a new item created via API"
+}
+
+### Update Item
+PUT {{baseUrl}}/api/items/1
+Content-Type: {{contentType}}
+
+{
+    "name": "Updated Item",
+    "description": "This item has been updated",
+    "active": true
+}
+
+### Partial Update Item (only name)
+PUT {{baseUrl}}/api/items/1
+Content-Type: {{contentType}}
+
+{
+    "name": "Only Name Updated"
+}
+
+### Delete Item
+DELETE {{baseUrl}}/api/items/1
+
+### Create Multiple Items for Testing
+POST {{baseUrl}}/api/items
+Content-Type: {{contentType}}
+
+{
+    "name": "Test Item Alpha",
+    "description": "First test item"
+}
+
+###
+POST {{baseUrl}}/api/items
+Content-Type: {{contentType}}
+
+{
+    "name": "Test Item Beta",
+    "description": "Second test item"
+}
+
+###
+POST {{baseUrl}}/api/items
+Content-Type: {{contentType}}
+
+{
+    "name": "Test Item Gamma",
+    "description": "Third test item"
+}

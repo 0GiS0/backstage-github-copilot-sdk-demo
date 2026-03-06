@@ -1,0 +1,50 @@
+### ${{values.name}} API Tests
+### Base URL for development
+@baseUrl = http://localhost:8000
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Root endpoint - Service information
+GET {{baseUrl}}/
+
+### Hello endpoint
+GET {{baseUrl}}/api/hello
+
+### Status endpoint
+GET {{baseUrl}}/api/status
+
+### Get all memes
+GET {{baseUrl}}/api/memes
+
+### Get meme by ID
+GET {{baseUrl}}/api/memes/1
+
+### Create new meme
+POST {{baseUrl}}/api/memes
+Content-Type: application/json
+
+{
+  "name": "Chad Energy",
+  "description": "A test meme for API validation",
+  "category": "Energetic",
+  "rating": 8.5,
+  "views": 5000,
+  "max_shares": 2500
+}
+
+### Update meme
+PUT {{baseUrl}}/api/memes/1
+Content-Type: application/json
+
+{
+  "name": "Ultimate Chad Energy",
+  "description": "An updated test meme with maximum epicness",
+  "category": "Energetic",
+  "rating": 9.2,
+  "views": 10000,
+  "max_shares": 5000
+}
+
+### Delete meme
+DELETE {{baseUrl}}/api/memes/1

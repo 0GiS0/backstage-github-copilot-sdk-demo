@@ -1,0 +1,40 @@
+{
+  "name": "🔷 BACKSTAGE_ENTITY_NAME dev environment",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:9.0",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "formulahendry.dotnet-test-explorer",
+        "jchannon.csharpextensions",
+        "github.copilot",
+        "github.copilot-chat",
+        "humao.rest-client",
+        "ms-dotnettools.csdevkit",
+        "DavidAnson.vscode-markdownlint",
+        "johnpapa.winteriscoming",
+        "Catppuccin.catppuccin-vsc-icons"
+      ],
+      "settings": {
+        "dotnet.defaultSolution": "src/BACKSTAGE_ENTITY_NAME.csproj",
+        "workbench.colorTheme": "Winter is Coming (Dark Blue)",
+        "workbench.iconTheme": "catppuccin-mocha"
+      }
+    }
+  },
+  "postCreateCommand": "dotnet restore src/BACKSTAGE_ENTITY_NAME.csproj && dotnet tool install --global dotnet-format",
+  "remoteUser": "vscode",
+  "forwardPorts": [
+    8080
+  ],
+  "portsAttributes": {
+    "8080": {
+      "label": "BACKSTAGE_ENTITY_NAME API (HTTP)",
+      "onAutoForward": "notify"
+    }
+  }
+}

@@ -127,18 +127,20 @@ function summarizeParameterSchema(parameters: any[] = []) {
       {
         sectionTitle: section?.title || `Section ${index + 1}`,
         description: section?.description,
-        fields: Object.entries(properties).map(([name, definition]: [string, any]) => ({
-          name,
-          title: definition?.title || name,
-          type: definition?.type || 'object',
-          description: definition?.description,
-          required: requiredFields.has(name),
-          default: definition?.default,
-          enum: definition?.enum,
-          enumNames: definition?.enumNames,
-          uiField: definition?.['ui:field'],
-          uiWidget: definition?.['ui:widget'],
-        })),
+        fields: Object.entries(properties).map(
+          ([name, definition]: [string, any]) => ({
+            name,
+            title: definition?.title || name,
+            type: definition?.type || 'object',
+            description: definition?.description,
+            required: requiredFields.has(name),
+            default: definition?.default,
+            enum: definition?.enum,
+            enumNames: definition?.enumNames,
+            uiField: definition?.['ui:field'],
+            uiWidget: definition?.['ui:widget'],
+          }),
+        ),
       },
     ];
   });

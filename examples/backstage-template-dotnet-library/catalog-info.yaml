@@ -1,0 +1,220 @@
+---
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: dotnet-library
+  title: 📦 .NET Library
+  description: Create a reusable .NET class library with NuGet packaging support
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: 0GiS0/backstage-template-dotnet-library
+  tags:
+    - dotnet
+    - csharp
+    - library
+    - nuget
+    - reusable
+spec:
+  owner: copilot-sdk-challenge-team
+  type: library
+  parameters:
+    - title: 📦 Complete the form to create a new .NET Library
+      required:
+        - name
+        - description
+        - system
+        - teamOwner
+      properties:
+        name:
+          type: string
+          title: 📦 Library Name
+          description: The name of the library (kebab-case, will be converted to PascalCase for .NET)
+          ui:autofocus: true
+          ui:field: ValidateKebabCase
+        description:
+          title: 📝 Description
+          type: string
+          description: A description for the library
+          minLength: 1
+          maxLength: 340
+          pattern: "^.*\\S.*$"
+          ui:help: "Required field. Max 340 characters."
+          ui:options:
+            inputProps:
+              maxLength: 340
+              placeholder: "Enter a clear, concise description of this .NET library..."
+          ui:widget: textarea
+        owner:
+          title: 👥 Select in which group the component will be created
+          type: string
+          description: The group the component belongs to
+          ui:field: MyGroupsPicker
+        system:
+          title: 🏗️ System
+          type: string
+          description: The system the library belongs to
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: System
+        teamOwner:
+          title: 👨‍💼 Team Owner
+          type: string
+          description: Team responsible for maintaining this library
+          default: copilot-sdk-challenge-team
+          ui:field: MyGroupsPicker
+        enableNuGet:
+          title: 📦 Enable NuGet Packaging
+          type: boolean
+          description: Configure the library for NuGet package publishing
+          default: true
+        demo:
+          title: 🎪 Demo Repository
+          type: string
+          description: Mark this repository as a demonstration/test repository
+          default: "yes"
+          enum:
+            - "yes"
+            - "no"
+          enumNames:
+            - "🎪 Yes - Demo/Test"
+            - "🏭 No - Production"
+    - title: 🎯 Choose a destination
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: 🔗 Repository URL
+          type: string
+          description: The URL of the repository
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedOwners:
+              - 0GiS0
+            allowedHosts:
+              - github.com
+  steps:
+    - id: fetch-base
+      name: 📥 Fetch Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutTemplating:
+          - .github/workflows/*
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+          description: ${{ parameters.description }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          repoUrl: ${{ parameters.repoUrl }}
+          teamOwner: ${{ parameters.teamOwner }}
+          system: ${{ parameters.system }}
+          enableNuGet: ${{ parameters.enableNuGet }}
+
+    - id: replace-placeholders
+      name: 🔄 Replace placeholders in content
+      action: roadiehq:utils:fs:replace
+      input:
+        files:
+          # Solution file
+          - file: "./BACKSTAGE_ENTITY_NAME.sln"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          # Main project file
+          - file: "./src/BACKSTAGE_ENTITY_NAME.csproj"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          - file: "./src/BACKSTAGE_ENTITY_NAME.csproj"
+            find: "BACKSTAGE_ORG_NAME"
+            replaceWith: ${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}
+          - file: "./src/BACKSTAGE_ENTITY_NAME.csproj"
+            find: "BACKSTAGE_DESCRIPTION"
+            replaceWith: ${{ parameters.description }}
+          # Test project file
+          - file: "./tests/BACKSTAGE_ENTITY_NAME.Tests.csproj"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          # Source files
+          - file: "./src/**/*.cs"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          # Test files
+          - file: "./tests/**/*.cs"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          # README
+          - file: "./README.md"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          - file: "./README.md"
+            find: "BACKSTAGE_DESCRIPTION"
+            replaceWith: ${{ parameters.description }}
+          - file: "./README.md"
+            find: "BACKSTAGE_ORG_NAME"
+            replaceWith: ${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}
+          # mkdocs.yml
+          - file: "./mkdocs.yml"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          # devcontainer.json
+          - file: "./.devcontainer/devcontainer.json"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          # docs/index.md
+          - file: "./docs/index.md"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          # publish workflow
+          - file: "./.github/workflows/publish.yml"
+            find: "BACKSTAGE_ENTITY_NAME"
+            replaceWith: ${{ parameters.name | replace("-", ".") | replace("_", ".") }}
+          - file: "./.github/workflows/publish.yml"
+            find: "BACKSTAGE_ORG_NAME"
+            replaceWith: ${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}
+
+    - id: rename-solution
+      name: 📝 Rename solution file
+      action: fs:rename
+      input:
+        files:
+          - from: ./BACKSTAGE_ENTITY_NAME.sln
+            to: ./${{ parameters.name | replace("-", ".") | replace("_", ".") }}.sln
+          - from: ./src/BACKSTAGE_ENTITY_NAME.csproj
+            to: ./src/${{ parameters.name | replace("-", ".") | replace("_", ".") }}.csproj
+          - from: ./tests/BACKSTAGE_ENTITY_NAME.Tests.csproj
+            to: ./tests/${{ parameters.name | replace("-", ".") | replace("_", ".") }}.Tests.csproj
+
+    - id: publish
+      name: 🚀 Publish to GitHub
+      action: publish:github
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        description: ${{ parameters.description }}
+        topics:
+          - backstage-include
+          - 0GiS0
+          - dotnet
+          - csharp
+          - library
+          - nuget
+        defaultBranch: main
+        gitCommitMessage: Create .NET library from template
+        customProperties:
+          service-tier: tier-3
+          team-owner: ${{ parameters.teamOwner }}
+          demo: ${{ parameters.demo }}
+
+    - id: register
+      name: 📋 Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps["publish"].output.repoContentsUrl }}
+        catalogInfoPath: "/catalog-info.yaml"
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps["publish"].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps["register"].output.entityRef }}

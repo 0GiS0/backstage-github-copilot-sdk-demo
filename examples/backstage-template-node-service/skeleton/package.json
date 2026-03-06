@@ -1,0 +1,48 @@
+{
+  "name": "BACKSTAGE_ENTITY_NAME",
+  "author": "BACKSTAGE_AUTHOR",
+  "version": "1.0.0",
+  "description": "BACKSTAGE_ENTITY_DESCRIPTION",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --detectOpenHandles",
+    "test:containers": "JEST_ENV=containers jest --runInBand --detectOpenHandles",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "db:migrate": "node scripts/db-migrate.js || echo 'No migrations yet'"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^10.10.4",
+    "eslint": "^9.34.0",
+    "jest": "^30.1.2",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4",
+    "testcontainers": "^10.10.4"
+  },
+  "engines": {
+    "node": ">=24.10.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "globalSetup": "<rootDir>/tests/global-setup.js",
+    "globalTeardown": "<rootDir>/tests/global-teardown.js",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup-test-db.js"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "BACKSTAGE_REPO_URL"
+  },
+  "license": "MIT"
+}

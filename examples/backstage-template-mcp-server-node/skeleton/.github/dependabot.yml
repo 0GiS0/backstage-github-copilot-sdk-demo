@@ -1,0 +1,44 @@
+---
+version: 2
+
+# MCP Server Node Template Skeleton Dependabot
+
+updates:
+  # NPM dependencies (root package.json in generated repo)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:30"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+    labels: ["dependencies", "npm", "node"]
+    open-pull-requests-limit: 5
+
+  # GitHub Actions updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:40"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels: ["dependencies", "github-actions", "ci"]
+    open-pull-requests-limit: 5
+
+  # Devcontainer / Docker base image updates (if devcontainer provided)
+  - package-ecosystem: "devcontainers"
+    directory: "/.devcontainer"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:50"
+    commit-message:
+      prefix: "devcontainer"
+      include: "scope"
+    labels: ["dependencies", "devcontainer"]
+    open-pull-requests-limit: 2

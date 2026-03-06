@@ -1,0 +1,32 @@
+site_name: Domain Template
+site_description: Backstage template for creating domain definitions and documentation
+
+nav:
+  - Home: index.md
+  - Template Usage: template-usage.md
+
+theme:
+  name: material
+  palette:
+    primary: green
+    accent: green
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+
+plugins:
+  - search
+  - techdocs-core
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+  - toc:
+      permalink: true

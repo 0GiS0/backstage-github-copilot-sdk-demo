@@ -1,0 +1,58 @@
+### ${{values.name}} API Tests
+### Base URL for development
+@baseUrl = http://localhost:4000
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Root endpoint - Service information
+GET {{baseUrl}}/
+
+### Hello endpoint
+GET {{baseUrl}}/api/hello
+
+### Status endpoint
+GET {{baseUrl}}/api/status
+
+### Get all memes
+GET {{baseUrl}}/api/memes
+
+### Get meme by ID
+GET {{baseUrl}}/api/memes/1
+
+### Create new meme
+# @name createMeme
+POST {{baseUrl}}/api/memes
+Content-Type: application/json
+
+{
+  "name": "Distracted Boyfriend",
+  "description": "A man looking at another woman while his girlfriend looks disapprovingly",
+  "category": "Classic",
+  "rating": 9.5,
+  "views": 1000000,
+  "maxShares": 500000
+}
+
+###
+
+@memeId = {{ createMeme.response.body.id }}
+
+### Update meme
+PUT {{baseUrl}}/api/memes/{{memeId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Meme",
+  "description": "An updated meme with more epicness",
+  "category": "Classic",
+  "rating": 9.8,
+  "views": 2000000,
+  "maxShares": 1000000
+}
+
+### Delete meme
+DELETE {{baseUrl}}/api/memes/{{memeId}}
+
+### Test 404 endpoint
+GET {{baseUrl}}/api/nonexistent

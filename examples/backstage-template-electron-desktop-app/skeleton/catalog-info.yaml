@@ -1,0 +1,23 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.name}}
+  description: |
+    ${{values.description}}
+  annotations:
+    github.com/project-slug: ${{values.repoOwner}}/${{values.name}}
+  links:
+    - url: https://github.com/${{values.repoOwner}}/${{values.name}}
+      title: Repository
+      icon: github
+  tags:
+    - electron
+    - desktop
+    - typescript
+    - react
+spec:
+  type: component
+  lifecycle: production
+  owner: ${{values.teamOwner}}
+  system: ${{values.system}}

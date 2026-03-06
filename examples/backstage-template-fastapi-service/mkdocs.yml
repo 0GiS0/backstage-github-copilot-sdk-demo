@@ -1,0 +1,32 @@
+site_name: FastAPI Service Template
+site_description: Backstage template for creating FastAPI microservices and APIs using Python
+
+nav:
+  - Home: index.md
+  - Template Usage: template-usage.md
+
+theme:
+  name: material
+  palette:
+    primary: teal
+    accent: teal
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+
+plugins:
+  - search
+  - techdocs-core
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+  - toc:
+      permalink: true

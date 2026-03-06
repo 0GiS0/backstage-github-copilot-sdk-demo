@@ -1,0 +1,32 @@
+site_name: AI Assistant Template
+site_description: Backstage template for creating AI Assistant services using Python and FastAPI
+
+nav:
+  - Home: index.md
+  - Template Usage: template-usage.md
+
+theme:
+  name: material
+  palette:
+    primary: blue
+    accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+
+plugins:
+  - search
+  - techdocs-core
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+  - toc:
+      permalink: true

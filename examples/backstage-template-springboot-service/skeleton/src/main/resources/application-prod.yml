@@ -1,0 +1,45 @@
+# Production Profile Configuration
+spring:
+  # PostgreSQL for production
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:demo}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  # Disable H2 Console in production
+  h2:
+    console:
+      enabled: false
+
+  # Disable DevTools in production
+  devtools:
+    restart:
+      enabled: false
+
+# Logging - less verbose for production
+logging:
+  level:
+    root: WARN
+    com.example.demo: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Server hardening
+server:
+  error:
+    include-message: never
+    include-stacktrace: never

@@ -1,0 +1,29 @@
+name: Funny Insurance Names
+description: Generate a list of funny insurance product names.
+model: deepseek/deepseek-v3-0324
+modelParameters:
+  temperature: 0.7
+messages:
+  - role: system
+    content: |
+      You are a creative assistant that generates funny and catchy insurance product names. Your task is to come up with a list of unique and humorous names that would appeal to a wide audience. Be imaginative and think outside the box!
+  - role: user
+    content: |
+      Please provide a list of 10 funny insurance product names.
+testData:
+  - input: ""
+    expected: |
+      1. "InvisiSure" - Insurance for invisible items
+      2. "Oops! Protection" - Coverage for all your accidental mishaps
+      3. "Zombie Apocalypse Insurance" - Because you never know when the undead will rise
+      4. "Alien Abduction Coverage" - For those unexpected extraterrestrial encounters
+      5. "Time Travel Insurance" - Protect yourself from paradoxes and time loops
+      6. "Pet Psychic Protection" - Insurance for your pet's psychic abilities
+      7. "Superhero Liability Insurance" - For when your superpowers cause unintended damage
+      8. "Haunted House Coverage" - Insurance for spooky properties
+      9. "Virtual Reality Mishap Insurance" - For accidents in the digital world
+      10. "Extreme Sports Gone Wrong Insurance" - Coverage for all your adrenaline-fueled adventures
+evaluators:
+  - name: Output should contain 10 names
+    string:
+      contains: "10"

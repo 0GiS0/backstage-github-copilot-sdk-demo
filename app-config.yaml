@@ -98,56 +98,56 @@ catalog:
         - allow: [User, Group]
 
     # Software Templates from ghec-org-as-code (topic: backstage-copilot-sdk)
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-system/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-system/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-domain/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-domain/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-node-service/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-node-service/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-fastapi-service/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-fastapi-service/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-dotnet-service/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-dotnet-service/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-dotnet-library/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-dotnet-library/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-ai-assistant/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-ai-assistant/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-mcp-server-node/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-mcp-server-node/catalog-info.yaml
       rules:
         - allow: [Template]
     - type: file
       target: ../../examples/backstage-template-astro-frontend/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-electron-desktop-app/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-electron-desktop-app/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-kubernetes-gitops/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-kubernetes-gitops/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-springboot-service/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-springboot-service/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-vue-frontend/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-vue-frontend/catalog-info.yaml
       rules:
         - allow: [Template]
 # kubernetes:

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-vite/
+out/
+.DS_Store
+*.log
+*.swp
+*.swo
+*~
+.vscode-test/
+.env
+.env.local

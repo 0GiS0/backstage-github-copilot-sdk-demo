@@ -1,0 +1,43 @@
+site_name: "BACKSTAGE_ENTITY_NAME"
+site_description: "Service documentation for BACKSTAGE_ENTITY_NAME"
+site_url: "https://github.com/${{values.destination.owner}}/${{values.name}}"
+repo_url: "https://github.com/${{values.destination.owner}}/${{values.name}}"
+repo_name: "BACKSTAGE_ENTITY_NAME"
+
+nav:
+  - Introduction: index.md
+  - Quick Start: guide/quickstart.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Decisions (ADR): architecture/adr/index.md
+  - API: api/index.md
+  - Operations:
+      - Local Run: operations/local.md
+      - Observability: operations/observability.md
+  - References: reference/index.md
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+  features:
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - search.highlight
+    - search.suggest
+
+plugins:
+  - search
+  # - mermaid2
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: BACKSTAGE_REPO_URL

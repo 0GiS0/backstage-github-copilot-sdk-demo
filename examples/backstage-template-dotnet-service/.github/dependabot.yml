@@ -1,0 +1,32 @@
+---
+version: 2
+
+# .NET Service Template Dependabot configuration
+
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/skeleton"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:30"
+    open-pull-requests-limit: 8
+    commit-message:
+      prefix: "nuget"
+      include: "scope"
+    labels: ["dependencies", "dotnet", "nuget"]
+    ignore:
+      - dependency-name: "Microsoft.Extensions.*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:40"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels: ["dependencies", "github-actions", "ci"]

@@ -1,0 +1,50 @@
+{
+  "funcionname": "☕ BACKSTAGE_ENTITY_NAME dev environment",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/maven-sdkman:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-spring-boot",
+        "vscjava.vscode-spring-initializr",
+        "vscjava.vscode-spring-boot-dashboard",
+        "Pivotal.vscode-boot-dev-pack",
+        "github.copilot",
+        "github.copilot-chat",
+        "humao.rest-client",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker",
+        "SonarSource.sonarlint-vscode",
+        "DavidAnson.vscode-markdownlint"
+      ],
+      "settings": {
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "java.compile.nullAnalysis.mode": "automatic",
+        "spring-boot.ls.java.home": "/usr/lib/jvm/msopenjdk-current",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "postCreateCommand": "mvn clean install -DskipTests",
+  "remoteUser": "vscode",
+  "forwardPorts": [
+    8080,
+    5432
+  ],
+  "portsAttributes": {
+    "8080": {
+      "label": "Spring Boot API",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL Database",
+      "onAutoForward": "silent"
+    }
+  }
+}

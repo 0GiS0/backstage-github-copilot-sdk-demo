@@ -1,4 +1,4 @@
-import { Navigate, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -22,7 +22,10 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
+import { ChallengeHomePage } from './components/home/ChallengeHomePage';
 import { searchPage } from './components/search/SearchPage';
+import { ChallengeTemplateCard } from './components/templates/ChallengeTemplateCard';
+import { ChallengeTemplateListPage } from './components/templates/ChallengeTemplateListPage.tsx';
 import { Root } from './components/Root';
 
 import {
@@ -77,7 +80,7 @@ const app = createApp({
 
 const routes = (
   <FlatRoutes>
-    <Route path="/" element={<Navigate to="catalog" />} />
+    <Route path="/" element={<ChallengeHomePage />} />
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
@@ -94,7 +97,22 @@ const routes = (
         <ReportIssue />
       </TechDocsAddons>
     </Route>
-    <Route path="/create" element={<ScaffolderPage />} />
+    <Route
+      path="/create"
+      element={
+        <ScaffolderPage
+          components={{
+            TemplateCardComponent: ChallengeTemplateCard,
+            EXPERIMENTAL_TemplateListPageComponent: ChallengeTemplateListPage,
+          }}
+          headerOptions={{
+            title: 'Challenge Templates',
+            subtitle:
+              'Launch one of the localized templates or let Copilot guide the creation flow.',
+          }}
+        />
+      }
+    />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route
       path="/catalog-import"

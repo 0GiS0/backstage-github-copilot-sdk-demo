@@ -1,0 +1,189 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.name}}
+  description: |
+    ${{values.description}}
+  annotations:
+    github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - java
+    - spring-boot
+    - microservice
+spec:
+  type: service
+  lifecycle: production
+  owner: ${{values.teamOwner}}
+  system: ${{values.system}}
+  providesApis:
+    - ${{values.name}}-api
+  # dependsOn:
+  #   - resource:database
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ${{values.name}}-api
+  description: REST API for ${{values.name}} service
+  annotations:
+    github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
+spec:
+  type: openapi
+  lifecycle: production
+  owner: ${{values.teamOwner}}
+  system: ${{values.system}}
+  definition: |
+    openapi: 3.0.3
+    info:
+      title: ${{values.name}} API
+      version: 1.0.0
+      description: REST API for ${{values.name}} service
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
+    paths:
+      /api/items:
+        get:
+          summary: List all items
+          operationId: listItems
+          tags:
+            - Items
+          responses:
+            '200':
+              description: List of items
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Item'
+        post:
+          summary: Create a new item
+          operationId: createItem
+          tags:
+            - Items
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CreateItemRequest'
+          responses:
+            '201':
+              description: Item created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Item'
+      /api/items/{id}:
+        get:
+          summary: Get item by ID
+          operationId: getItem
+          tags:
+            - Items
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                format: int64
+          responses:
+            '200':
+              description: Item found
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Item'
+            '404':
+              description: Item not found
+        put:
+          summary: Update item
+          operationId: updateItem
+          tags:
+            - Items
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                format: int64
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/UpdateItemRequest'
+          responses:
+            '200':
+              description: Item updated
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Item'
+        delete:
+          summary: Delete item
+          operationId: deleteItem
+          tags:
+            - Items
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+                format: int64
+          responses:
+            '204':
+              description: Item deleted
+      /actuator/health:
+        get:
+          summary: Health check
+          operationId: health
+          tags:
+            - Actuator
+          responses:
+            '200':
+              description: Service is healthy
+    components:
+      schemas:
+        Item:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            name:
+              type: string
+            description:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+        CreateItemRequest:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              minLength: 1
+              maxLength: 100
+            description:
+              type: string
+              maxLength: 500
+        UpdateItemRequest:
+          type: object
+          properties:
+            name:
+              type: string
+              minLength: 1
+              maxLength: 100
+            description:
+              type: string
+              maxLength: 500

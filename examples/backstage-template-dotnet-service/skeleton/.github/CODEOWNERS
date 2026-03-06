@@ -1,0 +1,28 @@
+# CODEOWNERS for generated service repository
+# This file is templated during Backstage scaffolding.
+# Ownership model:
+# - Platform team: elevated / protected areas
+# - Template approvers: template structural files
+# - (Optional) Developers team can be added via Backstage parameters extension later
+
+# Global ownership (allow platform team as fallback)
+* $${{ values.destination.owner }}/@platform-team
+
+# Template / scaffolding structural files
+skeleton/ $${{ values.destination.owner }}/@template-approvers
+template.yaml $${{ values.destination.owner }}/@template-approvers
+
+# Backstage catalog metadata
+catalog-info.yaml $${{ values.destination.owner }}/@template-approvers
+
+# Documentation
+/docs/ $${{ values.destination.owner }}/@template-approvers
+*.md  $${{ values.destination.owner }}/@template-approvers
+
+# GitHub configuration
+.github/ $${{ values.destination.owner }}/@platform-team
+.github/workflows/ $${{ values.destination.owner }}/@platform-team
+
+# Security-sensitive / deployment related
+Dockerfile $${{ values.destination.owner }}/@platform-team
+docker-compose.yml $${{ values.destination.owner }}/@platform-team

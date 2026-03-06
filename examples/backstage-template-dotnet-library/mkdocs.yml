@@ -1,0 +1,7 @@
+site_name: .NET Library Template
+plugins:
+  - techdocs-core
+
+nav:
+  - Home: index.md
+  - Template Usage: template-usage.md

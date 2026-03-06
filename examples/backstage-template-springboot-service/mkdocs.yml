@@ -1,0 +1,33 @@
+site_name: Spring Boot Service Template
+site_description: Documentation for the Spring Boot Service Backstage Template
+repo_url: https://github.com/AgenticGroot/backstage-template-springboot-service
+edit_uri: edit/main/docs/
+
+nav:
+  - Home: index.md
+  - Template Usage: template-usage.md
+
+plugins:
+  - techdocs-core
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+
+theme:
+  name: material
+  palette:
+    primary: green
+    accent: lime
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - content.code.copy

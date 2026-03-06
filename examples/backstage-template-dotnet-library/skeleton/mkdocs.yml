@@ -1,0 +1,8 @@
+site_name: BACKSTAGE_ENTITY_NAME
+plugins:
+  - techdocs-core
+
+nav:
+  - Home: index.md
+  - API Reference: api-reference.md
+  - Contributing: contributing.md

@@ -3,20 +3,24 @@
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
-  name: examples
+  name: copilot-sdk-challenge
+  title: Copilot SDK Challenge
+  description: Demo system for the GitHub Copilot SDK challenge showcase.
 spec:
-  owner: guests
+  owner: copilot-sdk-challenge-team
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: example-website
+  title: Copilot SDK Demo Portal
+  description: Showcase component for the Copilot SDK challenge Backstage demo.
 spec:
   type: website
   lifecycle: experimental
-  owner: guests
-  system: examples
+  owner: copilot-sdk-challenge-team
+  system: copilot-sdk-challenge
   providesApis: [example-grpc-api]
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
@@ -24,11 +28,13 @@ apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: example-grpc-api
+  title: Copilot SDK Demo API
+  description: Example gRPC API exposed by the Copilot SDK challenge demo component.
 spec:
   type: grpc
   lifecycle: experimental
-  owner: guests
-  system: examples
+  owner: copilot-sdk-challenge-team
+  system: copilot-sdk-challenge
   definition: |
     syntax = "proto3";
 

@@ -5,7 +5,7 @@ kind: User
 metadata:
   name: 0GiS0
 spec:
-  memberOf: [guests]
+  memberOf: [copilot-sdk-challenge-team]
 
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-user
@@ -14,13 +14,15 @@ kind: User
 metadata:
   name: guest
 spec:
-  memberOf: [guests]
+  memberOf: [copilot-sdk-challenge-team]
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
 apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
-  name: guests
+  name: copilot-sdk-challenge-team
+  title: Copilot SDK Challenge Team
+  description: Demo platform team curating the Copilot SDK challenge Backstage experience.
 spec:
   type: team
   children: []

@@ -1,0 +1,23 @@
+{
+    "name": ".NET Library Development",
+    "image": "mcr.microsoft.com/devcontainers/dotnet:9.0",
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.csdevkit",
+                "formulahendry.dotnet-test-explorer",
+                "editorconfig.editorconfig"
+            ],
+            "settings": {
+                "dotnet.defaultSolution": "BACKSTAGE_ENTITY_NAME.sln",
+                "omnisharp.enableRoslynAnalyzers": true,
+                "omnisharp.enableEditorConfigSupport": true
+            }
+        }
+    },
+    "postCreateCommand": "dotnet restore && dotnet build"
+}
