@@ -97,7 +97,7 @@ catalog:
       rules:
         - allow: [User, Group]
 
-    # Software Templates from ghec-org-as-code (topic: backstage-copilot-sdk)
+    # Software Templates stored locally under examples/ so the demo is self-contained
     - type: file
       target: ../../examples/backstage-template-system/catalog-info.yaml
       rules:

@@ -8,7 +8,6 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import LayersIcon from '@material-ui/icons/Layers';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   Content,
@@ -62,25 +61,18 @@ const useStyles = makeStyles(theme => ({
     border: '1px solid rgba(125, 243, 225, 0.18)',
     boxShadow: '0 24px 70px rgba(2, 8, 23, 0.22)',
   },
-  eyebrow: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-    padding: theme.spacing(0.8, 1.5),
-    borderRadius: 999,
-    background: 'rgba(125, 243, 225, 0.12)',
-    color: '#9af7ea',
-    fontWeight: 700,
-    letterSpacing: '0.08em',
-    textTransform: 'uppercase',
-    marginBottom: theme.spacing(2),
+  heroCopy: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 'clamp(2rem, 4vw, 3.4rem)',
     lineHeight: 0.98,
     fontWeight: 800,
     letterSpacing: '-0.04em',
-    marginBottom: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.25),
     maxWidth: 980,
   },
   subtitle: {
@@ -100,9 +92,11 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 800,
     letterSpacing: '-0.04em',
     marginBottom: theme.spacing(0.5),
+    color: '#f8fafc',
+    textShadow: '0 1px 0 rgba(2, 8, 23, 0.28)',
   },
   summaryLabel: {
-    color: 'rgba(226, 232, 240, 0.72)',
+    color: 'rgba(241, 245, 249, 0.92)',
   },
   filtersFrame: {
     borderRadius: 24,
@@ -148,18 +142,16 @@ export const ChallengeTemplateListPage = (props: TemplateListPageProps) => {
             <Paper className={classes.hero} elevation={0}>
               <Grid container spacing={3} alignItems="stretch">
                 <Grid item xs={12} md={8}>
-                  <div className={classes.eyebrow}>
-                    <LayersIcon fontSize="small" />
-                    Software Templates
+                  <div className={classes.heroCopy}>
+                    <Typography className={classes.title}>
+                      Software Templates
+                    </Typography>
+                    <Typography className={classes.subtitle}>
+                      Use these templates to scaffold new services,
+                      components, and project foundations with the standard
+                      Backstage creation flow.
+                    </Typography>
                   </div>
-                  <Typography className={classes.title}>
-                    Local challenge templates, cleaned up and ready to launch.
-                  </Typography>
-                  <Typography className={classes.subtitle}>
-                    This is now the visual center of the demo: richer template
-                    cards, local ownership of every scaffold, and a cleaner path
-                    into the same Scaffolder flow you already had.
-                  </Typography>
                 </Grid>
                 <Grid item xs={12} md={4}>
                   <Grid container spacing={2}>

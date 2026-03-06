@@ -25,6 +25,7 @@ const WIDGET_DEFAULT_WIDTH = 520;
 const WIDGET_DEFAULT_HEIGHT = 640;
 const FAB_SIZE = 72;
 const EDGE_OFFSET = 24;
+const CREATE_PAGE_LEFT_OFFSET = 256;
 const PANEL_BOTTOM_OFFSET = 92;
 const TOOLTIP_APPROX_WIDTH = 320;
 const MOBILE_BREAKPOINT = 960;
@@ -39,6 +40,14 @@ const getWidgetSide = (pathname: string, isCompactLayout: boolean) => {
   }
 
   return 'right';
+};
+
+const getWidgetOffset = (pathname: string, isCompactLayout: boolean) => {
+  if (!isCompactLayout && pathname.startsWith('/create')) {
+    return CREATE_PAGE_LEFT_OFFSET;
+  }
+
+  return EDGE_OFFSET;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -340,17 +349,18 @@ export const CopilotChatWidget = () => {
   const hasMessages = visibleMessages.length > 0;
   const isCompactLayout = viewportWidth < MOBILE_BREAKPOINT;
   const widgetSide = getWidgetSide(location.pathname, isCompactLayout);
+  const widgetOffset = getWidgetOffset(location.pathname, isCompactLayout);
   const panelWidth = Math.min(
     size.width,
-    Math.max(WIDGET_MIN_WIDTH, viewportWidth - EDGE_OFFSET * 2),
+    Math.max(WIDGET_MIN_WIDTH, viewportWidth - widgetOffset - EDGE_OFFSET),
   );
 
   const getHorizontalOffset = (elementWidth: number) => {
     if (widgetSide === 'right') {
-      return EDGE_OFFSET;
+      return widgetOffset;
     }
 
-    return Math.max(EDGE_OFFSET, viewportWidth - elementWidth - EDGE_OFFSET);
+    return Math.max(EDGE_OFFSET, viewportWidth - elementWidth - widgetOffset);
   };
 
   const fabStyle = {
