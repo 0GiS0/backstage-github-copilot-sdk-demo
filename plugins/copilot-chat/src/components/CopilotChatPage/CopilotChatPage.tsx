@@ -4,6 +4,7 @@ import { Header, Page, Content } from '@backstage/core-components';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { EmptyState } from './EmptyState';
+import { ProgressPanel } from './ProgressPanel';
 import { TypingIndicator } from './TypingIndicator';
 import { ModelSelector } from './ModelSelector';
 import { useCopilotChat } from './useCopilotChat';
@@ -57,6 +58,8 @@ export const CopilotChatPage = () => {
     selectedModel,
     changeModel,
     modelsLoading,
+    toolAction,
+    progressSteps,
   } = useCopilotChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -93,7 +96,8 @@ export const CopilotChatPage = () => {
                 userAvatarUrl={userAvatarUrl}
               />
             ))}
-            {isLoading && <TypingIndicator />}
+            <ProgressPanel steps={progressSteps} />
+            {isLoading && <TypingIndicator label={toolAction || undefined} />}
             <div ref={messagesEndRef} />
           </div>
         ) : (

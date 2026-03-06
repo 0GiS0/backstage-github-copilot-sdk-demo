@@ -1,4 +1,34 @@
 // Manual mock for @github/copilot-sdk (ESM-only, not compatible with Jest CJS)
+const createDefaultSession = () => ({
+  on: jest.fn(() => jest.fn()),
+  send: jest.fn(),
+  sendAndWait: jest.fn(),
+  disconnect: jest.fn(),
+  destroy: jest.fn(),
+});
+
+let mockSessionFactory = () => createDefaultSession();
+let lastCreateSessionOptions: any;
+let lastResumeSessionOptions: any;
+
+export function __setMockSessionFactory(factory: () => any) {
+  mockSessionFactory = factory;
+}
+
+export function __resetMockSessionFactory() {
+  mockSessionFactory = () => createDefaultSession();
+  lastCreateSessionOptions = undefined;
+  lastResumeSessionOptions = undefined;
+}
+
+export function __getLastCreateSessionOptions() {
+  return lastCreateSessionOptions;
+}
+
+export function __getLastResumeSessionOptions() {
+  return lastResumeSessionOptions;
+}
+
 export class CopilotClient {
   constructor(_opts: any) {}
   async start() {}
@@ -6,19 +36,19 @@ export class CopilotClient {
   async listModels() {
     return [];
   }
-  async createSession(_opts: any) {
-    return {
-      on: jest.fn(),
-      sendAndWait: jest.fn(),
-    };
+  async createSession(opts: any) {
+    lastCreateSessionOptions = opts;
+    return mockSessionFactory();
   }
-  async resumeSession(_id: string, _opts: any) {
-    return {
-      on: jest.fn(),
-      sendAndWait: jest.fn(),
-    };
+  async resumeSession(_id: string, opts: any) {
+    lastResumeSessionOptions = opts;
+    return mockSessionFactory();
   }
 }
+
+export const approveAll = jest.fn(async () => ({
+  outcome: 'approved',
+}));
 
 /**
  * Mock defineTool – returns a serialisable tool descriptor that the SDK

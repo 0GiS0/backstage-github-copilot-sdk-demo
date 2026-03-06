@@ -91,13 +91,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const TypingIndicator = () => {
+export const TypingIndicator = ({ label }: { label?: string }) => {
   const classes = useStyles();
-  const [label, setLabel] = useState('🎤 Singing…');
+  const [defaultLabel, setDefaultLabel] = useState('🎤 Singing…');
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLabel('🎤 Singing… oops! I mean 🤔 Thinking…');
+      setDefaultLabel('🎤 Singing… oops! I mean 🤔 Thinking…');
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -115,7 +115,7 @@ export const TypingIndicator = () => {
           <div className={classes.bar} />
           <div className={classes.bar} />
         </div>
-        <span className={classes.label}>{label}</span>
+        <span className={classes.label}>{label || defaultLabel}</span>
       </div>
     </div>
   );

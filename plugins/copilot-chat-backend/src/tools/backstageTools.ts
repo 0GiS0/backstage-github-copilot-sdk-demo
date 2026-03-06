@@ -21,6 +21,11 @@ type TemplateRefParts = {
   entityRef: string;
 };
 
+type TemplateDefaults = Record<string, unknown>;
+type CreateBackstageToolsOptions = {
+  githubToken?: string;
+};
+
 // ── Lazy-load defineTool from the ESM-only SDK ──────────────────
 let _defineTool: any;
 async function getDefineTool(): Promise<any> {
@@ -67,6 +72,23 @@ async function backstageFetch(
   logger: LoggerService,
 ): Promise<any> {
   return backstageRequest(path, logger);
+}
+
+async function githubRequest(
+  path: string,
+  logger: LoggerService,
+  githubToken: string,
+): Promise<Response> {
+  const url = `https://api.github.com${path}`;
+  logger.info(`[tool] GET ${url}`);
+  return fetch(url, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${githubToken}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'backstage-copilot-chat',
+    },
+  });
 }
 
 function parseTemplateRef(input: string): TemplateRefParts {
@@ -139,11 +161,140 @@ function summarizeParameterSchema(parameters: any[] = []) {
             enumNames: definition?.enumNames,
             uiField: definition?.['ui:field'],
             uiWidget: definition?.['ui:widget'],
+            uiOptions: definition?.['ui:options'],
           }),
         ),
       },
     ];
   });
+}
+
+function collectDefaultValues(parameters: any[] = []): TemplateDefaults {
+  const defaults: TemplateDefaults = {};
+
+  for (const section of parameters) {
+    const properties = section?.properties || {};
+
+    for (const [name, definition] of Object.entries(properties)) {
+      if ((definition as any)?.default !== undefined) {
+        defaults[name] = (definition as any).default;
+      }
+    }
+  }
+
+  return defaults;
+}
+
+function deriveRepoName(repoUrl: unknown): string | undefined {
+  if (typeof repoUrl !== 'string' || !repoUrl.includes('?')) {
+    return undefined;
+  }
+
+  const query = repoUrl.split('?', 2)[1];
+  const params = new URLSearchParams(query);
+  return params.get('repo') || undefined;
+}
+
+function parseRepoDestination(repoUrl: unknown) {
+  if (typeof repoUrl !== 'string' || !repoUrl.includes('?')) {
+    return undefined;
+  }
+
+  const query = repoUrl.split('?', 2)[1];
+  const params = new URLSearchParams(query);
+  const owner = params.get('owner') || undefined;
+  const repo = params.get('repo') || undefined;
+
+  if (!owner || !repo) {
+    return undefined;
+  }
+
+  return { owner, repo };
+}
+
+async function checkRepoAvailability(
+  repoUrl: unknown,
+  logger: LoggerService,
+  githubToken?: string,
+) {
+  const destination = parseRepoDestination(repoUrl);
+
+  if (!destination) {
+    return {
+      checked: false,
+      exists: false,
+      owner: undefined,
+      repo: undefined,
+      reason: 'No valid repoUrl destination was provided',
+    };
+  }
+
+  if (!githubToken) {
+    return {
+      checked: false,
+      exists: false,
+      owner: destination.owner,
+      repo: destination.repo,
+      reason: 'No GitHub token available for repo availability check',
+    };
+  }
+
+  const response = await githubRequest(
+    `/repos/${destination.owner}/${destination.repo}`,
+    logger,
+    githubToken,
+  );
+
+  if (response.status === 404) {
+    return {
+      checked: true,
+      exists: false,
+      owner: destination.owner,
+      repo: destination.repo,
+    };
+  }
+
+  if (!response.ok) {
+    const payload = await response.text();
+    throw new Error(
+      `GitHub API ${response.status}: ${
+        payload || 'repo availability check failed'
+      }`,
+    );
+  }
+
+  const data = await response.json();
+  return {
+    checked: true,
+    exists: true,
+    owner: destination.owner,
+    repo: destination.repo,
+    repoUrl: data.html_url,
+    visibility: data.private ? 'private' : 'public',
+  };
+}
+
+export function applyTemplateDefaults(
+  entity: any,
+  values: Record<string, unknown>,
+): Record<string, unknown> {
+  const parameters = Array.isArray(entity.spec?.parameters)
+    ? entity.spec.parameters
+    : [];
+
+  const resolvedValues: Record<string, unknown> = {
+    ...collectDefaultValues(parameters),
+    ...values,
+  };
+
+  if (!resolvedValues.name) {
+    const derivedRepoName = deriveRepoName(resolvedValues.repoUrl);
+    if (derivedRepoName) {
+      resolvedValues.name = derivedRepoName;
+    }
+  }
+
+  return resolvedValues;
 }
 
 function getRequiredFieldNames(parameters: any[] = []) {
@@ -178,6 +329,7 @@ function formatTemplateDetails(entity: any) {
         name: step.name,
         action: step.action,
       })) || [],
+    defaultValues: collectDefaultValues(parameters),
     requiredFields: getRequiredFieldNames(parameters),
     parameterSections: summarizeParameterSchema(parameters),
   };
@@ -187,7 +339,10 @@ function formatTemplateDetails(entity: any) {
  * Creates all the custom Backstage tools for the Copilot session.
  * Must be called async because defineTool comes from an ESM module.
  */
-export async function createBackstageTools(logger: LoggerService) {
+export async function createBackstageTools(
+  logger: LoggerService,
+  options: CreateBackstageToolsOptions = {},
+) {
   const defineTool = await getDefineTool();
 
   // ── 1. List / search catalog entities ─────────────────────────
@@ -373,6 +528,41 @@ export async function createBackstageTools(logger: LoggerService) {
     },
   });
 
+  const checkRepoAvailabilityTool = defineTool(
+    'github_check_repo_availability',
+    {
+      description:
+        'Check whether the GitHub repository described by a Backstage repoUrl already exists. ' +
+        'Use this before launching a Software Template so you can stop early if the name is already taken.',
+      parameters: {
+        type: 'object',
+        properties: {
+          repoUrl: {
+            type: 'string',
+            description:
+              'Repository destination in Backstage RepoUrlPicker format, for example github.com?owner=ORG&repo=NAME',
+          },
+        },
+        required: ['repoUrl'],
+      },
+      handler: async (args: { repoUrl: string }) => {
+        const result = await checkRepoAvailability(
+          args.repoUrl,
+          logger,
+          options.githubToken,
+        );
+
+        logger.info(
+          `[tool] github_check_repo_availability ${result.owner || '?'} / ${
+            result.repo || '?'
+          } => ${result.exists ? 'exists' : 'available'}`,
+        );
+
+        return result;
+      },
+    },
+  );
+
   // ── 5. Create scaffolder task ────────────────────────────────
   const createScaffolderTask = defineTool('backstage_create_scaffolder_task', {
     description:
@@ -400,6 +590,23 @@ export async function createBackstageTools(logger: LoggerService) {
       values: Record<string, unknown>;
     }) => {
       const template = parseTemplateRef(args.templateRef);
+      const entity = await backstageFetch(
+        `/api/catalog/entities/by-name/${template.kind}/${template.namespace}/${template.name}`,
+        logger,
+      );
+      const resolvedValues = applyTemplateDefaults(entity, args.values);
+      const repoAvailability = await checkRepoAvailability(
+        resolvedValues.repoUrl,
+        logger,
+        options.githubToken,
+      );
+
+      if (repoAvailability.checked && repoAvailability.exists) {
+        throw new Error(
+          `Repository ${repoAvailability.owner}/${repoAvailability.repo} already exists on GitHub. Choose a different repo name before launching the template.`,
+        );
+      }
+
       const result = await backstageRequest(
         '/api/scaffolder/v2/tasks',
         logger,
@@ -407,7 +614,7 @@ export async function createBackstageTools(logger: LoggerService) {
           method: 'POST',
           body: {
             templateRef: template.entityRef,
-            values: args.values,
+            values: resolvedValues,
           },
         },
       );
@@ -419,7 +626,7 @@ export async function createBackstageTools(logger: LoggerService) {
       return {
         taskId: result.id,
         templateRef: template.entityRef,
-        values: args.values,
+        values: resolvedValues,
         taskPath: `/create/tasks/${result.id}`,
         taskUrl: `${BACKSTAGE_APP_BASE_URL}/create/tasks/${result.id}`,
         apiTaskUrl: `${BACKSTAGE_BASE_URL}/api/scaffolder/v2/tasks/${result.id}`,
@@ -536,6 +743,7 @@ export async function createBackstageTools(logger: LoggerService) {
     getEntity,
     listTemplates,
     getTemplateDetails,
+    checkRepoAvailabilityTool,
     createScaffolderTask,
     getScaffolderTask,
     searchEntities,

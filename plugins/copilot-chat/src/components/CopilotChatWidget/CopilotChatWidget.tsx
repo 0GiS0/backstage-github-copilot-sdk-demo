@@ -13,6 +13,7 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import { useLocation } from 'react-router-dom';
 import { MessageBubble } from '../CopilotChatPage/MessageBubble';
 import { ChatInput } from '../CopilotChatPage/ChatInput';
+import { ProgressPanel } from '../CopilotChatPage/ProgressPanel';
 import { TypingIndicator } from '../CopilotChatPage/TypingIndicator';
 import { ModelSelector } from '../CopilotChatPage/ModelSelector';
 import { useCopilotChat } from '../CopilotChatPage/useCopilotChat';
@@ -256,6 +257,8 @@ export const CopilotChatWidget = () => {
     selectedModel,
     changeModel,
     modelsLoading,
+    toolAction,
+    progressSteps,
   } = useCopilotChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -328,9 +331,10 @@ export const CopilotChatWidget = () => {
   const hasMessages = visibleMessages.length > 0;
   const isCompactLayout = viewportWidth < MOBILE_BREAKPOINT;
   const isHomePage = location.pathname === '/';
+  const isCreateSection = location.pathname.startsWith('/create');
   const widgetSide = 'right';
   const widgetOffset = EDGE_OFFSET;
-  const shouldDockFabTopRight = !open && !isHomePage && !isCompactLayout;
+  const shouldDockFabTopRight = !open && isCreateSection && !isCompactLayout;
   const panelWidth = Math.min(
     size.width,
     Math.max(WIDGET_MIN_WIDTH, viewportWidth - widgetOffset - EDGE_OFFSET),
@@ -488,7 +492,8 @@ export const CopilotChatWidget = () => {
                   userAvatarUrl={userAvatarUrl}
                 />
               ))}
-              {isLoading && <TypingIndicator />}
+              <ProgressPanel steps={progressSteps} />
+              {isLoading && <TypingIndicator label={toolAction || undefined} />}
               <div ref={messagesEndRef} />
             </div>
           ) : (

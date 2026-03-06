@@ -134,7 +134,7 @@ spec:
             replaceWith: ${{ parameters.description }}
           - file: './package.json'
             find: 'BACKSTAGE_AUTHOR'
-            replaceWith: ${{ parameters.owner }}
+            replaceWith: ${{ parameters.owner or parameters.teamOwner }}
           - file: './package.json'
             find: 'BACKSTAGE_REPO_URL'
             replaceWith: ${{ parameters.repoUrl }}
@@ -151,6 +151,9 @@ spec:
             find: 'BACKSTAGE_ENTITY_NAME'
             replaceWith: ${{ parameters.name }}
           - file: './mkdocs.yml'
+            find: 'BACKSTAGE_REPO_URL'
+            replaceWith: ${{ parameters.repoUrl }}
+          - file: './docs/reference/index.md'
             find: 'BACKSTAGE_REPO_URL'
             replaceWith: ${{ parameters.repoUrl }}
           # tests
