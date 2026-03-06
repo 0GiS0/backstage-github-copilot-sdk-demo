@@ -2,11 +2,19 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: ${{values.name}}
+  title: ${{values.name}}
   description: |
     ${{values.description}}
   annotations:
     github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
     backstage.io/techdocs-ref: dir:.
+  links:
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}
+      title: Repository
+      icon: github
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}/tree/main/docs
+      title: Docs
+      icon: docs
   tags:
     - nodejs
     - typescript
@@ -26,9 +34,17 @@ apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: ${{values.name}}-api
+  title: ${{values.name}} API
   description: API for managing ${{values.name}}
   annotations:
     github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
+  links:
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}
+      title: Repository
+      icon: github
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}/tree/main/docs/api
+      title: API docs
+      icon: docs
 spec:
   type: openapi
   lifecycle: production

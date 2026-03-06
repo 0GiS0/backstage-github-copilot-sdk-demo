@@ -1,0 +1,11 @@
+site_name: Meme Captioner
+site_description: Component guide for Meme Captioner
+
+nav:
+  - Overview: index.md
+
+theme:
+  name: material
+
+plugins:
+  - search

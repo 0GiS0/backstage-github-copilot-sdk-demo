@@ -2,10 +2,18 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: ${{values.name}}
+  title: ${{values.name}}
   description: ${{values.description}}
   annotations:
     github.com/project-slug: ${{values.destination.owner}}/${{values.destination.repo}}
     backstage.io/techdocs-ref: dir:.
+  links:
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}
+      title: Repository
+      icon: github
+    - url: https://github.com/${{values.destination.owner}}/${{values.destination.repo}}/tree/main/docs
+      title: Docs
+      icon: docs
   tags:
     - python
     - ai

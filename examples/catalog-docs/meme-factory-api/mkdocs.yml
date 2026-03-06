@@ -1,0 +1,9 @@
+site_name: Meme Factory API
+site_description: Component guide for Meme Factory API
+nav:
+  - Overview: index.md
+theme:
+  name: material
+plugins:
+  - search
+  - techdocs-core

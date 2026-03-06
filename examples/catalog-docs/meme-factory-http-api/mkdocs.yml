@@ -1,0 +1,11 @@
+site_name: Meme Factory HTTP API
+site_description: API guide for Meme Factory HTTP API
+
+nav:
+  - Overview: index.md
+
+theme:
+  name: material
+
+plugins:
+  - search

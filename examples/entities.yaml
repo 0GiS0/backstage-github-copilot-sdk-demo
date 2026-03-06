@@ -1,47 +1,225 @@
 ---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: developer-chaos
+  title: Developer Chaos
+  description: Internal developer-experience domain for tools that turn release pain, flaky pipelines, and PR drama into something the team can actually manage.
+  annotations:
+    github.com/project-slug: 0GiS0/backstage-github-copilot-sdk-demo
+    backstage.io/techdocs-ref: dir:./catalog-docs/developer-chaos
+  links:
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
+      title: Demo workspace
+      icon: github
+    - url: http://localhost:3000/docs/default/domain/developer-chaos
+      title: TechDocs
+      icon: docs
+  tags:
+    - internal
+    - developer-experience
+    - demo
+spec:
+  owner: group:default/meme-factory-team
+---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
-  name: copilot-sdk-challenge
-  title: Copilot SDK Challenge
-  description: Demo system for the GitHub Copilot SDK challenge showcase.
+  name: meme-factory
+  title: Meme Factory
+  description: Demo platform where engineers upload incident screenshots, generate sarcastic captions with AI, and publish the final meme board.
+  annotations:
+    github.com/project-slug: 0GiS0/backstage-github-copilot-sdk-demo
+    backstage.io/techdocs-ref: dir:./catalog-docs/meme-factory
+  links:
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
+      title: Demo workspace
+      icon: github
+    - url: http://localhost:3000/docs/default/system/meme-factory
+      title: TechDocs
+      icon: docs
+  tags:
+    - memes
+    - ai
+    - internal-tool
 spec:
-  owner: copilot-sdk-challenge-team
+  owner: group:default/meme-factory-team
+  domain: developer-chaos
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: meme-vault
+  title: Meme Vault
+  description: Shared asset store for raw screenshots, generated captions, and final meme exports used by the Meme Factory system.
+  annotations:
+    github.com/project-slug: 0GiS0/backstage-github-copilot-sdk-demo
+    backstage.io/techdocs-ref: dir:./catalog-docs/meme-vault
+  links:
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
+      title: Demo workspace
+      icon: github
+    - url: http://localhost:3000/docs/default/resource/meme-vault
+      title: TechDocs
+      icon: docs
+  tags:
+    - storage
+    - shared-resource
+    - media
+spec:
+  type: object-storage
+  owner: group:default/meme-factory-team
+  system: meme-factory
+  dependencyOf:
+    - component:default/meme-factory-api
+    - component:default/meme-captioner
+
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: example-website
-  title: Copilot SDK Demo Portal
-  description: Showcase component for the Copilot SDK challenge Backstage demo.
+  name: meme-factory-web
+  title: Meme Factory Web
+  description: Frontend where the team browses memes, uploads fresh incident screenshots, and checks caption generation status.
+  annotations:
+    github.com/project-slug: 0GiS0/backstage-github-copilot-sdk-demo
+    backstage.io/techdocs-ref: dir:./catalog-docs/meme-factory-web
+  links:
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
+      title: Demo workspace
+      icon: github
+    - url: http://localhost:3000/docs/default/component/meme-factory-web
+      title: TechDocs
+      icon: docs
+  tags:
+    - astro
+    - frontend
+    - website
 spec:
   type: website
-  lifecycle: experimental
-  owner: copilot-sdk-challenge-team
-  system: copilot-sdk-challenge
-  providesApis: [example-grpc-api]
+  lifecycle: production
+  owner: group:default/meme-factory-team
+  system: meme-factory
+  consumesApis:
+    - api:default/meme-factory-http-api
+
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: meme-factory-api
+  title: Meme Factory API
+  description: Core backend for uploads, moderation rules, meme lifecycle, and publication workflows.
+  annotations:
+    github.com/project-slug: 0GiS0/backstage-github-copilot-sdk-demo
+    backstage.io/techdocs-ref: dir:./catalog-docs/meme-factory-api
+  links:
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
+      title: Demo workspace
+      icon: github
+    - url: http://localhost:3000/docs/default/component/meme-factory-api
+      title: TechDocs
+      icon: docs
+  tags:
+    - nodejs
+    - api
+    - backend
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/meme-factory-team
+  system: meme-factory
+  providesApis:
+    - api:default/meme-factory-http-api
+  dependsOn:
+    - resource:default/meme-vault
+
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: meme-captioner
+  title: Meme Captioner
+  description: AI assistant that rewrites incident drama into captions, punchlines, and tone-safe variants for the meme board.
+  annotations:
+    github.com/project-slug: 0GiS0/backstage-github-copilot-sdk-demo
+    backstage.io/techdocs-ref: dir:./catalog-docs/meme-captioner
+  links:
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
+      title: Demo workspace
+      icon: github
+    - url: http://localhost:3000/docs/default/component/meme-captioner
+      title: TechDocs
+      icon: docs
+  tags:
+    - ai
+    - assistant
+    - fastapi
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/meme-factory-team
+  system: meme-factory
+  consumesApis:
+    - api:default/meme-factory-http-api
+  dependsOn:
+    - resource:default/meme-vault
+
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: example-grpc-api
-  title: Copilot SDK Demo API
-  description: Example gRPC API exposed by the Copilot SDK challenge demo component.
+  name: meme-factory-http-api
+  title: Meme Factory HTTP API
+  description: OpenAPI contract used by the web frontend and the caption service to upload assets, request captions, and publish memes.
+  annotations:
+    github.com/project-slug: 0GiS0/backstage-github-copilot-sdk-demo
+    backstage.io/techdocs-ref: dir:./catalog-docs/meme-factory-http-api
+  links:
+    - url: https://github.com/0GiS0/backstage-github-copilot-sdk-demo
+      title: Demo workspace
+      icon: github
+    - url: http://localhost:3000/docs/default/api/meme-factory-http-api
+      title: TechDocs
+      icon: docs
+  tags:
+    - openapi
+    - backend
+    - contract
 spec:
-  type: grpc
-  lifecycle: experimental
-  owner: copilot-sdk-challenge-team
-  system: copilot-sdk-challenge
+  type: openapi
+  lifecycle: production
+  owner: group:default/meme-factory-team
+  system: meme-factory
   definition: |
-    syntax = "proto3";
-
-    service Exampler {
-      rpc Example (ExampleMessage) returns (ExampleMessage) {};
-    }
-
-    message ExampleMessage {
-      string example = 1;
-    };
+    openapi: 3.0.3
+    info:
+      title: Meme Factory HTTP API
+      version: 1.0.0
+      description: API contract for uploads, caption generation, and meme publication workflows.
+    paths:
+      /memes:
+        post:
+          summary: Upload a screenshot and create a new meme draft
+          responses:
+            '201':
+              description: Meme draft created
+      /captions:
+        post:
+          summary: Generate caption candidates for an uploaded draft
+          responses:
+            '200':
+              description: Caption candidates generated
+      /health:
+        get:
+          summary: Health check endpoint
+          responses:
+            '200':
+              description: Service is healthy

@@ -1,0 +1,11 @@
+site_name: Meme Factory
+site_description: System overview for Meme Factory
+
+nav:
+  - Overview: index.md
+
+theme:
+  name: material
+
+plugins:
+  - search

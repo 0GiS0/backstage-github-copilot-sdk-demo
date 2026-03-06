@@ -80,6 +80,7 @@ spec:
           owner: ${{ parameters.owner }}
           description: ${{ parameters.description }}
           domain: ${{ parameters.domain | parseEntityRef | pick('name') }}
+          repoUrl: ${{ parameters.repoUrl }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
 
     - id: publish

@@ -4,8 +4,13 @@ apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: 0GiS0
+  title: Gisela Torres
+  description: Demo platform lead and primary maintainer of the Backstage Copilot showcase.
 spec:
-  memberOf: [copilot-sdk-challenge-team]
+  profile:
+    displayName: Gisela Torres
+    email: gisela@example.com
+  memberOf: [copilot-sdk-challenge-team, meme-factory-team]
 
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-user
@@ -13,8 +18,13 @@ apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: guest
+  title: Guest User
+  description: Demo user used to validate ownership and catalog navigation flows.
 spec:
-  memberOf: [copilot-sdk-challenge-team]
+  profile:
+    displayName: Guest User
+    email: guest@example.com
+  memberOf: [meme-factory-team]
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
 apiVersion: backstage.io/v1alpha1
@@ -25,6 +35,25 @@ metadata:
   description: Demo platform team curating the Copilot SDK challenge Backstage experience.
 spec:
   type: team
+  profile:
+    displayName: Copilot SDK Challenge Team
+    email: backstage-demo@example.com
+  children: [meme-factory-team]
+
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: meme-factory-team
+  title: Meme Factory Team
+  description: Small product team responsible for the Meme Factory demo platform and its AI caption workflow.
+spec:
+  type: team
+  profile:
+    displayName: Meme Factory Team
+    email: meme-factory@example.com
+  parent: copilot-sdk-challenge-team
   children: []
 
 ---
