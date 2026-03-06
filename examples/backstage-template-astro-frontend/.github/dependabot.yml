@@ -1,0 +1,48 @@
+---
+version: 2
+
+# Astro Frontend Template Dependabot Configuration
+# Incluye mantenimiento de:
+#  - Devcontainer base (para VS Code / Codespaces)
+#  - Dependencias npm del esqueleto (package.json en /skeleton)
+#  - GitHub Actions workflows reutilizados
+
+updates:
+  # Devcontainer updates (Dockerfile / devcontainer.json images)
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+    commit-message:
+      prefix: "devcontainer"
+      include: "scope"
+    labels: ["dependencies", "devcontainer"]
+    open-pull-requests-limit: 2
+
+  # NPM dependencies for the generated project skeleton
+  - package-ecosystem: "npm"
+    directory: "/skeleton"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:10"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+    labels: ["dependencies", "npm", "astro"]
+    open-pull-requests-limit: 5
+
+  # GitHub Actions versions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:20"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels: ["dependencies", "github-actions", "ci"]
+    open-pull-requests-limit: 5

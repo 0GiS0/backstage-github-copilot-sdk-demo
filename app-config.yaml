@@ -130,8 +130,8 @@ catalog:
       target: https://github.com/0GiS0/backstage-template-mcp-server-node/blob/main/catalog-info.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/0GiS0/backstage-template-astro-frontend/blob/main/catalog-info.yaml
+    - type: file
+      target: ../../examples/backstage-template-astro-frontend/catalog-info.yaml
       rules:
         - allow: [Template]
     - type: url

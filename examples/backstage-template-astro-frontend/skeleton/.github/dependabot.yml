@@ -1,0 +1,32 @@
+---
+version: 2
+
+# Skeleton project Dependabot (Astro Frontend)
+# Mantiene npm y GitHub Actions para el repositorio creado desde la plantilla.
+
+updates:
+  # NPM dependencies (root package.json en el repositorio generado)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+    labels: ["dependencies", "npm", "astro"]
+    open-pull-requests-limit: 5
+
+  # GitHub Actions versions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:10"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels: ["dependencies", "github-actions", "ci"]
+    open-pull-requests-limit: 5

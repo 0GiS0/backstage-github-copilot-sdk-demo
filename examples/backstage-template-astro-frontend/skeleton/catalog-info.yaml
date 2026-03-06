@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.name}}
+  description: ${{values.description}}
+  annotations:
+    github.com/project-slug: ${{values.owner}}/${{values.name}}
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - astro
+    - nodejs
+    - frontend
+    - web
+spec:
+  type: website
+  lifecycle: production
+  owner: ${{values.teamOwner}}
+  system: ${{values.system}}
