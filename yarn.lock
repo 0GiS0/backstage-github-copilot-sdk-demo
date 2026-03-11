@@ -15244,6 +15244,8 @@ __metadata:
     "@backstage/plugin-org": "npm:^0.6.48"
     "@backstage/plugin-permission-react": "npm:^0.4.39"
     "@backstage/plugin-scaffolder": "npm:^1.35.2"
+    "@backstage/plugin-scaffolder-common": "npm:^1.7.5"
+    "@backstage/plugin-scaffolder-react": "npm:^1.19.6"
     "@backstage/plugin-search": "npm:^1.5.3"
     "@backstage/plugin-search-react": "npm:^1.10.2"
     "@backstage/plugin-signals": "npm:^0.0.27"
@@ -21685,9 +21687,9 @@ __metadata:
   linkType: hard
 
 "hono@npm:^4.11.4":
-  version: 4.11.9
-  resolution: "hono@npm:4.11.9"
-  checksum: 10c0/fe396a8e1a61755adb7afe8ce8e0935a6423a5680ec62f4fd3577c5c5a9236dec390dc28fef6b9742e067b5d9c53ddb3aa511b3359bf87dcc2105dae751f1242
+  version: 4.12.7
+  resolution: "hono@npm:4.12.7"
+  checksum: 10c0/1f6936582069fbcb96bed803b00ccd88a735746a1b3373f6b659b28e9bc5312f26d1368de7b2a72da0247280cbe636333946a87394c2845c3e9b46f400646eb0
   languageName: node
   linkType: hard
 
